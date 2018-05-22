@@ -1,0 +1,32 @@
+# create your drupal and postgres config here, based off the last assignment
+version: '3.5'
+
+services:
+
+  example_db:
+    image: postgres:9.6.7-alpine
+#    container_name: example_db
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=dtmqEqrKc67ykGc
+    volumes:
+      - type: tmpfs
+        target: /var/lib/postgresql/data
+    networks:
+       - overlay
+#    ports:
+#      - 5432:5432
+
+  example_web:
+    image: awsbeanstalkwithdatabase
+    build: .
+    ports:
+      - 8080:8080
+    depends_on:
+      - example_db
+    networks:
+       - overlay
+
+networks:
+  overlay:
