@@ -14,12 +14,12 @@ import javax.servlet.http.HttpServletResponse;
 
 @WebServlet(name = "HelloServlet", urlPatterns = {"/HelloServlet"})
 public class HelloServlet extends HttpServlet {
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) {
 		response.setStatus(SC_METHOD_NOT_ALLOWED);
 	}
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		final ServletOutputStream out = response.getOutputStream();
-		out.print("Hello World! " + new Date());
+		out.print("Hello World! " + System.currentTimeMillis());
 	}
 }
