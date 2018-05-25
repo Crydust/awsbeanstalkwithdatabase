@@ -6,9 +6,9 @@ services:
   example_db:
     image: postgres:9.6.9-alpine
     environment:
-      - POSTGRES_DB=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=dtmqEqrKc67ykGc
+      POSTGRES_DB: "postgres"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "dtmqEqrKc67ykGc"
     volumes:
       - type: tmpfs
         target: /var/lib/postgresql/data
@@ -16,6 +16,8 @@ services:
   example_web:
     image: awsbeanstalkwithdatabase
     build: .
+    environment:
+      CATALINA_OPTS: "-DRDS_DB_NAME=postgres -DRDS_USERNAME=postgres -DRDS_PASSWORD=dtmqEqrKc67ykGc -DRDS_HOSTNAME=example_db -DRDS_PORT=5432"
     ports:
       - 8080:8080
     depends_on:

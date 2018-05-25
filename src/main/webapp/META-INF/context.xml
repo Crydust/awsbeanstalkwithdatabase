@@ -3,7 +3,6 @@
     <Resource
             auth="Container"
             driverClassName="org.postgresql.Driver"
-            minIdle="0"
             maxIdle="4"
             maxTotal="8"
             maxWaitMillis="30000"
@@ -12,12 +11,6 @@
             type="javax.sql.DataSource"
             url="jdbc:postgresql://${RDS_HOSTNAME}:${RDS_PORT}/${RDS_DB_NAME}"
             username="${RDS_USERNAME}"
-            initialSize="0"
-            validationQuery="SELECT NULL"
-            validationQueryTimeout="30"
-            testOnBorrow="true"
-            testOnReturn="false"
-            timeBetweenEvictionRunsMillis="60000"
-            removeAbandoned="true"
+            initialSize="1"
     />
 </Context>
