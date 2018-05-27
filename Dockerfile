@@ -10,8 +10,6 @@ RUN set -ex; \
 
 ENV CATALINA_OPTS="-DRDS_DB_NAME=postgres -DRDS_USERNAME=postgres -DRDS_PASSWORD=changeme -DRDS_HOSTNAME=example -DRDS_PORT=5432"
 
-#CMD ["catalina.sh", "run", "-security"]
 CMD ["catalina.sh", "run"]
 
-#COPY docker-context.xml ${CATALINA_HOME}/conf/Catalina/localhost/ROOT.xml
 COPY target/ROOT.war ${CATALINA_HOME}/webapps/ROOT.war
