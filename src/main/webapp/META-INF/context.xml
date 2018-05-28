@@ -2,15 +2,15 @@
 <Context path="">
     <Resource
             auth="Container"
+            type="javax.sql.DataSource"
+            name="jdbc/exampleDB"
             factory="com.zaxxer.hikari.HikariJNDIFactory"
             dataSourceClassName="org.postgresql.ds.PGSimpleDataSource"
-            maximumPoolSize="8"
-            connectionTimeout="30000"
-            name="jdbc/exampleDB"
-            dataSource.password="${RDS_PASSWORD}"
-            type="javax.sql.DataSource"
-            dataSource.url="jdbc:postgresql://${RDS_HOSTNAME}:${RDS_PORT}/${RDS_DB_NAME}"
             dataSource.user="${RDS_USERNAME}"
+            dataSource.password="${RDS_PASSWORD}"
+            dataSource.url="jdbc:postgresql://${RDS_HOSTNAME}:${RDS_PORT}/${RDS_DB_NAME}"
+            idleTimeout="10000"
             minimumIdle="0"
+            maximumPoolSize="10"
     />
 </Context>
