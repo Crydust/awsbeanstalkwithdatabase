@@ -45,7 +45,6 @@ public class DbServlet extends HttpServlet {
 						if (rs.wasNull()) {
 							string = null;
 						}
-						System.out.println("string = " + string);
 						success = true;
 					}
 				}
