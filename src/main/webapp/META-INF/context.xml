@@ -11,6 +11,6 @@
             type="javax.sql.DataSource"
             url="jdbc:postgresql://${RDS_HOSTNAME}:${RDS_PORT}/${RDS_DB_NAME}"
             username="${RDS_USERNAME}"
-            initialSize="1"
+            initialSize="0"
     />
 </Context>
