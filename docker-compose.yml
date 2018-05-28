@@ -17,6 +17,6 @@ services:
       CATALINA_OPTS: "-DRDS_DB_NAME=postgres -DRDS_USERNAME=postgres -DRDS_PASSWORD=dtmqEqrKc67ykGc\
         \ -DRDS_HOSTNAME=example_db -DRDS_PORT=5432"
     ports:
-    - "8080:8080"
+    - "8082:8080"
     depends_on:
     - "example_db"
