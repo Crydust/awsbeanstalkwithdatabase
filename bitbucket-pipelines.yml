@@ -7,5 +7,3 @@ pipelines:
       - "maven"
       script:
       - "mvn -B verify"
-      artifacts:
-      - "target/*.war"
