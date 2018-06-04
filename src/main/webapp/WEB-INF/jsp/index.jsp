@@ -12,6 +12,8 @@
 <ul>
 	<c:url var="url" value="/HelloServlet"/>
 	<li><a href="${fn:escapeXml(url)}">HelloServlet</a></li>
+	<c:url var="url" value="/EchoServlet"/>
+	<li><a href="${fn:escapeXml(url)}">EchoServlet</a></li>
 	<c:url var="url" value="/DbServlet"/>
 	<li><a href="${fn:escapeXml(url)}">DbServlet</a></li>
 </ul>
