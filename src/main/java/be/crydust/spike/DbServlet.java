@@ -8,7 +8,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import javax.annotation.Resource;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -19,8 +21,9 @@ import javax.sql.DataSource;
 @WebServlet(name = "DbServlet", urlPatterns = {"/DbServlet"})
 public class DbServlet extends HttpServlet {
 
-	@Resource(name = "jdbc/exampleDB")
-	private DataSource ds;
+	// this also works, but see lookupDataSource for an approach that fails more gracefully
+//	@Resource(name = "jdbc/exampleDB")
+//	private DataSource ds;
 
 	private static void writeResponse(HttpServletRequest request, HttpServletResponse response, Status status) throws IOException, ServletException {
 		if (status == Status.FAILURE) {
@@ -33,19 +36,21 @@ public class DbServlet extends HttpServlet {
 	}
 
 	private static boolean executeSql(DataSource ds) {
+		final long currentTimeMillis = System.currentTimeMillis();
 		boolean success = false;
 		try (final Connection con = ds.getConnection()) {
 			con.setReadOnly(true);
-			try (final PreparedStatement ps = con.prepareStatement("SELECT 'X'")) {
+			try (final PreparedStatement ps = con.prepareStatement("SELECT ?")) {
+				ps.setLong(1, currentTimeMillis);
 				ps.setQueryTimeout(5);
 				ps.setFetchSize(1);
 				try (final ResultSet rs = ps.executeQuery()) {
 					if (rs.next()) {
-						String string = rs.getString(1);
+						long aLong = rs.getLong(1);
 						if (rs.wasNull()) {
-							string = null;
+							aLong = -1;
 						}
-						success = "X".equals(string);
+						success = (aLong == currentTimeMillis);
 					}
 				}
 			}
@@ -56,12 +61,23 @@ public class DbServlet extends HttpServlet {
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-		final boolean success = executeSql(ds);
+		boolean success = false;
+		try {
+			final DataSource ds = lookupDataSource();
+			success = executeSql(ds);
+		} catch (NamingException e) {
+			e.printStackTrace();
+		}
 		writeResponse(request, response, success ? Status.SUCCESS : Status.FAILURE);
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		writeResponse(request, response, Status.INITIAL);
+	}
+
+	private static DataSource lookupDataSource() throws NamingException {
+		final Context ctx = (Context)new InitialContext().lookup("java:comp/env");
+		return (DataSource)ctx.lookup("jdbc/exampleDB");
 	}
 
 	private enum Status {
