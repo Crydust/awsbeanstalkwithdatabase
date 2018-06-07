@@ -26,6 +26,7 @@
 		<maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
 		<maven-site-plugin.version>3.7</maven-site-plugin.version>
 		<HikariCP.version>2.7.8</HikariCP.version>
+		<slf4j.version>1.7.25</slf4j.version>
 	</properties>
 	<dependencies>
 		<!-- contains filter classes -->
@@ -77,13 +78,13 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.7.25</version>
+			<version>${slf4j.version}</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-jdk14</artifactId>
-			<version>1.7.25</version>
+			<version>${slf4j.version}</version>
 			<scope>runtime</scope>
 		</dependency>
 	</dependencies>
