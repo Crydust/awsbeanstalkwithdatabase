@@ -20,5 +20,9 @@
 </c:if>
 <c:url var="url" value="/IndexServlet"/>
 <p><a href="${fn:escapeXml(url)}">Go back to the index</a></p>
+<c:if test="${not empty pageContext.request.userPrincipal}">
+    <c:url var="url" value="/LogoutServlet"/>
+    <p><a href="${fn:escapeXml(url)}">Log out</a></p>
+</c:if>
 </body>
 </html>
