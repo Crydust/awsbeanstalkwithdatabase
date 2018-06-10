@@ -11,22 +11,23 @@
             dataSource.url="jdbc:postgresql://${RDS_HOSTNAME}:${RDS_PORT}/${RDS_DB_NAME}"
             minimumIdle="0"
     />
-    <Realm
-            className="org.apache.catalina.realm.DataSourceRealm"
-            dataSourceName="jdbc/exampleDB"
-            localDataSource="true"
-            userTable="users"
-            userNameCol="user_name"
-            userCredCol="user_pass"
-            userRoleTable="user_roles"
-            roleNameCol="role_name"
-    >
-        <CredentialHandler
-                className="org.apache.catalina.realm.SecretKeyCredentialHandler"
-                algorithm="PBKDF2WithHmacSHA256"
-                iterations="185000"
-                keyLength="256"
-                saltLength="8"
-        />
+    <Realm className="org.apache.catalina.realm.LockOutRealm">
+        <Realm
+                className="org.apache.catalina.realm.DataSourceRealm"
+                dataSourceName="jdbc/exampleDB"
+                localDataSource="true"
+                userTable="users"
+                userNameCol="user_name"
+                userCredCol="user_pass"
+                userRoleTable="user_roles"
+                roleNameCol="role_name">
+            <CredentialHandler
+                    className="org.apache.catalina.realm.SecretKeyCredentialHandler"
+                    algorithm="PBKDF2WithHmacSHA256"
+                    iterations="185000"
+                    keyLength="256"
+                    saltLength="8"
+            />
+        </Realm>
     </Realm>
 </Context>
