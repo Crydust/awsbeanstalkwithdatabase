@@ -30,6 +30,8 @@
 		<flyway-core.version>5.1.1</flyway-core.version>
 		<junit.version>4.12</junit.version>
 		<hamcrest.version>1.3</hamcrest.version>
+		<javamelody.version>1.72.0</javamelody.version>
+		<jrobin.version>1.5.9</jrobin.version>
 	</properties>
 	<dependencies>
 		<!-- contains filter classes -->
@@ -95,6 +97,19 @@
 			<groupId>org.flywaydb</groupId>
 			<artifactId>flyway-core</artifactId>
 			<version>${flyway-core.version}</version>
+		</dependency>
+		<!-- metrics -->
+		<dependency>
+			<groupId>net.bull.javamelody</groupId>
+			<artifactId>javamelody-core</artifactId>
+			<version>${javamelody.version}</version>
+		</dependency>
+		<!-- dependency of javamelody -->
+		<dependency>
+			<groupId>org.jrobin</groupId>
+			<artifactId>jrobin</artifactId>
+			<version>${jrobin.version}</version>
+			<scope>runtime</scope>
 		</dependency>
 		<!-- tests -->
 		<dependency>

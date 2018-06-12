@@ -11,7 +11,7 @@ import java.io.IOException;
 
 import static javax.servlet.http.HttpServletResponse.SC_METHOD_NOT_ALLOWED;
 
-@WebServlet(name = "UsersServlet", urlPatterns = {"/protected/UsersServlet"})
+@WebServlet(name = "UsersServlet", urlPatterns = {"/UsersServlet"})
 @ServletSecurity(@HttpConstraint(rolesAllowed={"admin"}))
 public class UsersServlet extends HttpServlet {
 

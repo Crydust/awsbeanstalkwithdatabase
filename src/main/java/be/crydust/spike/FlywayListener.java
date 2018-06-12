@@ -11,12 +11,12 @@ import javax.sql.DataSource;
 @WebListener()
 public class FlywayListener implements ServletContextListener {
 
-    @Resource(name = "jdbc/exampleDB")
+    @Resource(name = "jdbc/MyDataSource")
     private DataSource ds;
 
 //    private static DataSource lookupDataSource() throws NamingException {
 //        final Context ctx = (Context) new InitialContext().lookup("java:comp/env");
-//        return (DataSource) ctx.lookup("jdbc/exampleDB");
+//        return (DataSource) ctx.lookup("jdbc/MyDataSource");
 //    }
 
     @Override

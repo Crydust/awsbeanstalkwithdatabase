@@ -3,7 +3,7 @@
     <Resource
             auth="Container"
             type="javax.sql.DataSource"
-            name="jdbc/exampleDB"
+            name="jdbc/MyDataSource"
             factory="com.zaxxer.hikari.HikariJNDIFactory"
             dataSourceClassName="org.postgresql.ds.PGSimpleDataSource"
             dataSource.user="${RDS_USERNAME}"
@@ -14,7 +14,7 @@
     <Realm className="org.apache.catalina.realm.LockOutRealm">
         <Realm
                 className="org.apache.catalina.realm.DataSourceRealm"
-                dataSourceName="jdbc/exampleDB"
+                dataSourceName="jdbc/MyDataSource"
                 localDataSource="true"
                 userTable="users"
                 userNameCol="user_name"

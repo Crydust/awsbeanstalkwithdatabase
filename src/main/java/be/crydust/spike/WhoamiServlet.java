@@ -32,6 +32,9 @@ public class WhoamiServlet extends HttpServlet {
         if (request.isUserInRole("admin")) {
             roles.add("admin");
         }
+        if (request.isUserInRole("monitoring")) {
+            roles.add("monitoring");
+        }
 
         writeResponse(request, response, name, roles);
     }

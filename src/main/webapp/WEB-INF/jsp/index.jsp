@@ -18,8 +18,10 @@
     <li><a href="${fn:escapeXml(url)}">DbServlet</a></li>
     <c:url var="url" value="/WhoamiServlet"/>
     <li><a href="${fn:escapeXml(url)}">WhoamiServlet</a></li>
-    <c:url var="url" value="/protected/UsersServlet"/>
+    <c:url var="url" value="/UsersServlet"/>
     <li><a href="${fn:escapeXml(url)}">UsersServlet</a></li>
+    <c:url var="url" value="/monitoring"/>
+    <li><a href="${fn:escapeXml(url)}">monitoring</a></li>
 </ul>
 <c:if test="${not empty pageContext.request.userPrincipal}">
     <c:url var="url" value="/LogoutServlet"/>

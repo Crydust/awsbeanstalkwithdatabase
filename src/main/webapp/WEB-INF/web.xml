@@ -72,7 +72,7 @@
 		</jsp-property-group>
 	</jsp-config>
 	<resource-ref>
-		<res-ref-name>jdbc/exampleDB</res-ref-name>
+		<res-ref-name>jdbc/MyDataSource</res-ref-name>
 		<res-type>javax.sql.DataSource</res-type>
 		<res-auth>Container</res-auth>
 	</resource-ref>
@@ -83,9 +83,20 @@
 		<welcome-file>IndexServlet</welcome-file>
 	</welcome-file-list>
 	<security-role>
-		<description>admin</description>
 		<role-name>admin</role-name>
 	</security-role>
+	<security-role>
+		<role-name>monitoring</role-name>
+	</security-role>
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>Monitoring</web-resource-name>
+			<url-pattern>/monitoring</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>monitoring</role-name>
+		</auth-constraint>
+	</security-constraint>
 	<login-config>
 		<auth-method>FORM</auth-method>
 		<form-login-config>

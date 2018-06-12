@@ -1,13 +1,5 @@
 package be.crydust.spike;
 
-import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -17,12 +9,19 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 
 @WebServlet(name = "DbServlet", urlPatterns = {"/DbServlet"})
 public class DbServlet extends HttpServlet {
 
 	// this also works, but see lookupDataSource for an approach that fails more gracefully
-//	@Resource(name = "jdbc/exampleDB")
+//	@Resource(name = "jdbc/MyDataSource")
 //	private DataSource ds;
 
 	private static void writeResponse(HttpServletRequest request, HttpServletResponse response, Status status) throws IOException, ServletException {
@@ -77,7 +76,7 @@ public class DbServlet extends HttpServlet {
 
 	private static DataSource lookupDataSource() throws NamingException {
 		final Context ctx = (Context)new InitialContext().lookup("java:comp/env");
-		return (DataSource)ctx.lookup("jdbc/exampleDB");
+		return (DataSource)ctx.lookup("jdbc/MyDataSource");
 	}
 
 	private enum Status {
