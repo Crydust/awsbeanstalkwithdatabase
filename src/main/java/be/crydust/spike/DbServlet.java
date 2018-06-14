@@ -79,7 +79,7 @@ public class DbServlet extends HttpServlet {
 		return (DataSource)ctx.lookup("jdbc/MyDataSource");
 	}
 
-	private enum Status {
+	public enum Status {
 		INITIAL, SUCCESS, FAILURE
 	}
 }

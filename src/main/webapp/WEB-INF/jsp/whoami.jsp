@@ -1,6 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<jsp:useBean id="login" scope="request" type="java.lang.String"/>
+<jsp:useBean id="roles" scope="request" type="java.util.List"/>
 <!DOCTYPE html>
 <html>
 <head>
