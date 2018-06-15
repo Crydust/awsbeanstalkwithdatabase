@@ -111,56 +111,56 @@
             <version>${jrobin.version}</version>
             <scope>runtime</scope>
         </dependency>
-        <!-- populates beans automatically -->
-        <dependency>
-            <groupId>commons-beanutils</groupId>
-            <artifactId>commons-beanutils</artifactId>
-            <version>1.9.3</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-collections</groupId>
-                    <artifactId>commons-collections</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <!-- commons-beanutils depends on commons-logging -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
-            <version>${slf4j.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <!-- validation-api -->
-        <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-            <version>2.0.1.Final</version>
-        </dependency>
-        <!-- validation-api implementation -->
-        <dependency>
-            <groupId>org.hibernate.validator</groupId>
-            <artifactId>hibernate-validator</artifactId>
-            <version>6.0.10.Final</version>
-            <scope>runtime</scope>
-        </dependency>
-        <!-- dependency of hibernate-validator -->
-        <dependency>
-            <groupId>com.fasterxml</groupId>
-            <artifactId>classmate</artifactId>
-            <version>1.3.4</version>
-            <scope>runtime</scope>
-        </dependency>
-        <!-- dependency of hibernate-validator -->
-        <dependency>
-            <groupId>org.jboss.logging</groupId>
-            <artifactId>jboss-logging</artifactId>
-            <version>3.3.2.Final</version>
-            <scope>runtime</scope>
-        </dependency>
+        <!--&lt;!&ndash; populates beans automatically &ndash;&gt;-->
+        <!--<dependency>-->
+            <!--<groupId>commons-beanutils</groupId>-->
+            <!--<artifactId>commons-beanutils</artifactId>-->
+            <!--<version>1.9.3</version>-->
+            <!--<exclusions>-->
+                <!--<exclusion>-->
+                    <!--<groupId>commons-collections</groupId>-->
+                    <!--<artifactId>commons-collections</artifactId>-->
+                <!--</exclusion>-->
+                <!--<exclusion>-->
+                    <!--<groupId>commons-logging</groupId>-->
+                    <!--<artifactId>commons-logging</artifactId>-->
+                <!--</exclusion>-->
+            <!--</exclusions>-->
+        <!--</dependency>-->
+        <!--&lt;!&ndash; commons-beanutils depends on commons-logging &ndash;&gt;-->
+        <!--<dependency>-->
+            <!--<groupId>org.slf4j</groupId>-->
+            <!--<artifactId>jcl-over-slf4j</artifactId>-->
+            <!--<version>${slf4j.version}</version>-->
+            <!--<scope>runtime</scope>-->
+        <!--</dependency>-->
+        <!--&lt;!&ndash; validation-api &ndash;&gt;-->
+        <!--<dependency>-->
+            <!--<groupId>javax.validation</groupId>-->
+            <!--<artifactId>validation-api</artifactId>-->
+            <!--<version>2.0.1.Final</version>-->
+        <!--</dependency>-->
+        <!--&lt;!&ndash; validation-api implementation &ndash;&gt;-->
+        <!--<dependency>-->
+            <!--<groupId>org.hibernate.validator</groupId>-->
+            <!--<artifactId>hibernate-validator</artifactId>-->
+            <!--<version>6.0.10.Final</version>-->
+            <!--<scope>runtime</scope>-->
+        <!--</dependency>-->
+        <!--&lt;!&ndash; dependency of hibernate-validator &ndash;&gt;-->
+        <!--<dependency>-->
+            <!--<groupId>com.fasterxml</groupId>-->
+            <!--<artifactId>classmate</artifactId>-->
+            <!--<version>1.3.4</version>-->
+            <!--<scope>runtime</scope>-->
+        <!--</dependency>-->
+        <!--&lt;!&ndash; dependency of hibernate-validator &ndash;&gt;-->
+        <!--<dependency>-->
+            <!--<groupId>org.jboss.logging</groupId>-->
+            <!--<artifactId>jboss-logging</artifactId>-->
+            <!--<version>3.3.2.Final</version>-->
+            <!--<scope>runtime</scope>-->
+        <!--</dependency>-->
         <!-- tests -->
         <dependency>
             <groupId>junit</groupId>
