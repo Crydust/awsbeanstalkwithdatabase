@@ -15,7 +15,7 @@
 <p>Roles:</p>
 <ul>
     <c:forEach var="role" items="${roles}">
-    <li><c:out value="${role}"/></li>
+        <li><c:out value="${role}"/></li>
     </c:forEach>
 </ul>
 <c:url var="url" value="/IndexServlet"/>

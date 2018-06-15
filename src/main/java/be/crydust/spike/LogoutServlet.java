@@ -15,10 +15,12 @@ public class LogoutServlet extends HttpServlet {
         response.sendRedirect(response.encodeRedirectURL(request.getContextPath() + "/"));
     }
 
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         writeResponse(request, response);
     }
 
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         writeResponse(request, response);
     }

@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 
 /**
  * DO NOT USE IN PRODUCTION
- *
+ * <p>
  * This class is not protected against timing attacks and is also not reviewed.
  */
 public class PasswordHelper {

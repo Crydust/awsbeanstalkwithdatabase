@@ -12,7 +12,7 @@ import java.io.IOException;
 import static javax.servlet.http.HttpServletResponse.SC_METHOD_NOT_ALLOWED;
 
 @WebServlet(name = "UsersServlet", urlPatterns = {"/UsersServlet"})
-@ServletSecurity(@HttpConstraint(rolesAllowed={"admin"}))
+@ServletSecurity(@HttpConstraint(rolesAllowed = {"admin"}))
 public class UsersServlet extends HttpServlet {
 
     private static void writeResponse(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -21,10 +21,12 @@ public class UsersServlet extends HttpServlet {
         request.getRequestDispatcher("/WEB-INF/jsp/users.jsp").forward(request, response);
     }
 
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) {
         response.setStatus(SC_METHOD_NOT_ALLOWED);
     }
 
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         writeResponse(request, response);
     }
