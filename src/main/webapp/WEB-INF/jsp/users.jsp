@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<jsp:useBean id="model" scope="request" type="be.crydust.spike.users.Model"/>
 <!DOCTYPE html>
 <html>
 <head>
@@ -21,46 +22,20 @@ Remove role
 <table>
     <tr>
         <th>Name</th>
-        <th>Action</th>
+        <th>Roles</th>
     </tr>
-    <c:forEach var="user" items="${users}">
+    <c:forEach var="user" items="${model.users}">
         <tr>
-            <td><c:out value="${user}"/></td>
+            <td><c:out value="${user.name}"/></td>
             <td>
-                <button type="submit" name="action" value="deleteUser ${fn:escapeXml(user)}">Delete user</button>
+                <ul>
+                    <c:forEach var="role" items="${user.roles}">
+                        <li><c:out value="${role}"/></li>
+                    </c:forEach>
+                </ul>
             </td>
         </tr>
     </c:forEach>
-    <tr>
-        <td><label for="user">User name</label><br/>
-            <input type="text" name="user" id="user"/></td>
-        <td>
-            <button type="submit" name="action" value="addUser">Add user</button>
-        </td>
-    </tr>
-</table>
-
-<h2>Roles</h2>
-<table>
-    <tr>
-        <th>Name</th>
-        <th>Action</th>
-    </tr>
-    <c:forEach var="role" items="${roles}">
-        <tr>
-            <td><c:out value="${role}"/></td>
-            <td>
-                <button type="submit" name="action" value="deleteRole ${fn:escapeXml(role)}">Delete role</button>
-            </td>
-        </tr>
-    </c:forEach>
-    <tr>
-        <td><label for="role">Role name</label><br/>
-            <input type="text" name="role" id="role"/></td>
-        <td>
-            <button type="submit" name="action" value="addRole">Add role</button>
-        </td>
-    </tr>
 </table>
 
 <c:url var="url" value="/IndexServlet"/>

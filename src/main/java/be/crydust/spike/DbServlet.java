@@ -14,6 +14,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.function.Consumer;
 
 import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 
@@ -35,14 +36,25 @@ public class DbServlet extends HttpServlet {
     }
 
     private static boolean executeSql(DataSource ds) {
+
         final long currentTimeMillis = System.currentTimeMillis();
+
+        final String sql = "SELECT ?";
+        final Consumer<PreparedStatement> preparedStatementConsumer = (PreparedStatement ps) -> {
+            try {
+                ps.setLong(1, currentTimeMillis);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        };
+
         boolean success = false;
         try (final Connection con = ds.getConnection()) {
             con.setReadOnly(true);
-            try (final PreparedStatement ps = con.prepareStatement("SELECT ?")) {
-                ps.setLong(1, currentTimeMillis);
+            try (final PreparedStatement ps = con.prepareStatement(sql)) {
                 ps.setQueryTimeout(5);
                 ps.setFetchSize(1);
+                preparedStatementConsumer.accept(ps);
                 try (final ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
                         long aLong = rs.getLong(1);
