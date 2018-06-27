@@ -17,7 +17,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -25,8 +24,6 @@ import java.util.stream.Collectors;
 
 import static java.util.Collections.emptySet;
 import static java.util.Collections.singleton;
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.reducing;
 import static javax.servlet.http.HttpServletResponse.SC_METHOD_NOT_ALLOWED;
 
 @WebServlet(name = "UsersServlet", urlPatterns = {"/UsersServlet"})
@@ -99,22 +96,16 @@ public class UsersServlet extends HttpServlet {
                     return new User(
                             user_name,
                             role_name == null ? emptySet() : singleton(role_name));
-                }
-        )
+                })
                 .stream()
-                .collect(
-                        groupingBy(
-                                User::getName,
-                                reducing(
-                                        Collections.<String>emptySet(),
-                                        User::getRoles,
-                                        (a, b) -> {
-                                            final Set<String> roles = new HashSet<>(a);
-                                            roles.addAll(b);
-                                            return roles;
-                                        })
-                        )
-                )
+                .collect(Collectors.toMap(
+                        User::getName,
+                        User::getRoles,
+                        (a, b) -> {
+                            final Set<String> roles = new HashSet<>(a);
+                            roles.addAll(b);
+                            return roles;
+                        }))
                 .entrySet()
                 .stream()
                 .map(it -> new User(it.getKey(), it.getValue()))
