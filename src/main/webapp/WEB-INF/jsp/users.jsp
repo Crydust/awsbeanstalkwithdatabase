@@ -16,25 +16,86 @@ Add user (name, password, roles)
 Add role to user
 Remove role from user
 --%>
-<h2>Users</h2>
-<table border="1">
-    <tr>
-        <th>Login</th>
-        <th>Roles</th>
-    </tr>
-    <c:forEach var="user" items="${model.users}">
+<h2>Existing users</h2>
+
+<c:if test="${model.error}">
+    <p><c:out value="${model.errorMessage}"/></p>
+</c:if>
+
+<c:url var="url" value="/UsersServlet"/>
+<form action="${fn:escapeXml(url)}" method="POST">
+    <table>
         <tr>
-            <td><c:out value="${user.name}"/></td>
-            <td>
-                <ul>
-                    <c:forEach var="role" items="${user.roles}">
-                        <li><c:out value="${role}"/></li>
-                    </c:forEach>
-                </ul>
-            </td>
+            <th>Login</th>
+            <th>Roles</th>
+            <th>Actions</th>
         </tr>
-    </c:forEach>
-</table>
+        <c:forEach var="user" items="${model.users}" varStatus="userStatus">
+            <tr>
+                <td><c:out value="${user.name}"/></td>
+                <td>
+                    <ul>
+                        <c:forEach var="role" items="${user.roles}" varStatus="roleStatus">
+                            <li>
+                                <c:out value="${role}"/>
+                                ${' '}
+                                    <%-- comma seperated username and role, backslashes are doubled, commas escaped with backslashes --%>
+                                <button type="submit" name="button"
+                                        value="${fn:escapeXml(
+                                            'deleteUserRole:' +=
+                                            fn:replace(fn:replace(user.name, '\\', '\\\\'), ',' , '\\,') +=
+                                            ',' +=
+                                            fn:replace(fn:replace(role, '\\', '\\\\'), ',' , '\\,')
+                                        )}">
+                                    Remove role
+                                </button>
+                            </li>
+                        </c:forEach>
+                    </ul>
+                </td>
+                <td>
+                    <p>
+                        <c:set var="escapedName" value="${fn:escapeXml('addRoleToUser.role:' += user.name)}"/>
+                        <label for="${escapedName}">Role</label><br/>
+                        <input type="text" id="${escapedName}" name="${escapedName}"/><br/>
+                            <%-- only one parameter: no need to escape commas --%>
+                        <button type="submit" name="button"
+                                value="${fn:escapeXml('addRoleToUser:' += user.name)}">
+                            Add role to user
+                        </button>
+                    </p>
+                    <p>
+                            <%-- only one parameter: no need to escape commas --%>
+                        <button type="submit" name="button" value="${fn:escapeXml('removeUser:' += user.name)}">
+                            Remove user
+                        </button>
+                    </p>
+                </td>
+            </tr>
+        </c:forEach>
+    </table>
+</form>
+
+<h2>New user</h2>
+
+<c:url var="url" value="/UsersServlet"/>
+<form action="${fn:escapeXml(url)}" method="POST">
+    <p>
+        <label for="name">Login</label><br/>
+        <input type="text" id="name" name="name"/>
+    </p>
+    <p>
+        <label for="password">Password</label><br/>
+        <input type="password" id="password" name="password"/>
+    </p>
+    <p>
+        <label for="role">Role (optional)</label><br/>
+        <input type="text" id="role" name="role"/>
+    </p>
+    <p>
+        <button type="submit" name="button" value="createUser">Create user</button>
+    </p>
+</form>
 
 <c:url var="url" value="/IndexServlet"/>
 <p><a href="${fn:escapeXml(url)}">Go back to the index</a></p>
