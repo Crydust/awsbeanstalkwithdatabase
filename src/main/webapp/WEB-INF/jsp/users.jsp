@@ -38,15 +38,15 @@ Remove role from user
                         <c:forEach var="role" items="${user.roles}" varStatus="roleStatus">
                             <li>
                                 <c:out value="${role}"/>
-                                ${' '}
-                                    <%-- comma seperated username and role, backslashes are doubled, commas escaped with backslashes --%>
+                                    ${' '}
+                                <c:set var="subFormPrefix"
+                                       value="deleteUserRole-${userStatus.index}-${roleStatus.index}"/>
+                                <input type="hidden" name="${fn:escapeXml(subFormPrefix += ':name')}"
+                                       value="${fn:escapeXml(user.name)}"/>
+                                <input type="hidden" name="${fn:escapeXml(subFormPrefix += ':role')}"
+                                       value="${fn:escapeXml(role)}"/>
                                 <button type="submit" name="button"
-                                        value="${fn:escapeXml(
-                                            'deleteUserRole:' +=
-                                            fn:replace(fn:replace(user.name, '\\', '\\\\'), ',' , '\\,') +=
-                                            ',' +=
-                                            fn:replace(fn:replace(role, '\\', '\\\\'), ',' , '\\,')
-                                        )}">
+                                        value="${fn:escapeXml('deleteUserRole:' += subFormPrefix)}">
                                     Remove role
                                 </button>
                             </li>
@@ -54,19 +54,25 @@ Remove role from user
                     </ul>
                 </td>
                 <td>
+                    <c:set var="subFormPrefix"
+                           value="addRoleToUser-${userStatus.index}"/>
+                    <input type="hidden" name="${fn:escapeXml(subFormPrefix += ':name')}"
+                           value="${fn:escapeXml(user.name)}"/>
                     <p>
-                        <c:set var="escapedName" value="${fn:escapeXml('addRoleToUser.role:' += user.name)}"/>
+                        <c:set var="escapedName" value="${fn:escapeXml(subFormPrefix += ':role')}"/>
                         <label for="${escapedName}">Role</label><br/>
                         <input type="text" id="${escapedName}" name="${escapedName}"/><br/>
-                            <%-- only one parameter: no need to escape commas --%>
                         <button type="submit" name="button"
-                                value="${fn:escapeXml('addRoleToUser:' += user.name)}">
+                                value="${fn:escapeXml('addRoleToUser:' += subFormPrefix)}">
                             Add role to user
                         </button>
                     </p>
                     <p>
-                            <%-- only one parameter: no need to escape commas --%>
-                        <button type="submit" name="button" value="${fn:escapeXml('removeUser:' += user.name)}">
+                        <c:set var="subFormPrefix"
+                               value="removeUser-${userStatus.index}"/>
+                        <input type="hidden" name="${fn:escapeXml(subFormPrefix += ':name')}"
+                               value="${fn:escapeXml(user.name)}"/>
+                        <button type="submit" name="button" value="${fn:escapeXml('removeUser:' += subFormPrefix)}">
                             Remove user
                         </button>
                     </p>
