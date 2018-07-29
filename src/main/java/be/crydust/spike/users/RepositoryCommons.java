@@ -1,0 +1,66 @@
+package be.crydust.spike.users;
+
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+public final class RepositoryCommons {
+
+    private RepositoryCommons() {
+        throw new UnsupportedOperationException("this class is not supposed to be instantiated");
+    }
+
+    public static DataSource lookupDataSource() {
+        final String contextName = "java:comp/env";
+        final String datasourceName = "jdbc/MyDataSource";
+        try {
+            final Context ctx = (Context) new InitialContext().lookup(contextName);
+            return (DataSource) ctx.lookup(datasourceName);
+        } catch (NamingException e) {
+            throw new RepositoryException("Could not find DataSource '" + datasourceName + "' in context '" + contextName + "'", e);
+        }
+    }
+
+    public static <T> List<T> sqlToList(DataSource ds, String sql, ParameterSetter parameterSetter, ResultSetMapper<T> resultSetMapper) {
+        Objects.requireNonNull(ds, "ds");
+        Objects.requireNonNull(sql, "sql");
+        Objects.requireNonNull(parameterSetter, "parameterSetter");
+        Objects.requireNonNull(resultSetMapper, "resultSetMapper");
+        final List<T> list = new ArrayList<>();
+        try (final Connection con = ds.getConnection()) {
+            con.setReadOnly(true);
+            try (final PreparedStatement ps = con.prepareStatement(sql)) {
+                ps.setQueryTimeout(5 /* seconds */);
+                ps.setFetchSize(100 /* rows */);
+                parameterSetter.accept(ps);
+                try (final ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        list.add(resultSetMapper.map(rs));
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            final String sqlOnOneLine = sql.replace("[\r\n]", " ");
+            throw new RepositoryException("Could not execute query '" + sqlOnOneLine + "'", e);
+        }
+        return list;
+    }
+
+    @FunctionalInterface
+    public interface ParameterSetter {
+        void accept(PreparedStatement ps) throws SQLException;
+    }
+
+    @FunctionalInterface
+    public interface ResultSetMapper<T> {
+        T map(ResultSet rs) throws SQLException;
+    }
+}

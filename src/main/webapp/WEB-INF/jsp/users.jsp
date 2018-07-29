@@ -1,7 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<jsp:useBean id="model" scope="request" type="be.crydust.spike.users.Model"/>
+<jsp:useBean id="model" scope="request" type="be.crydust.spike.users.UsersViewModel"/>
 <!DOCTYPE html>
 <html>
 <head>
@@ -15,13 +15,11 @@
 Add user (name, password, roles)
 Add role to user
 Remove role from user
-Add role
-Remove role
 --%>
 <h2>Users</h2>
-<table>
+<table border="1">
     <tr>
-        <th>Name</th>
+        <th>Login</th>
         <th>Roles</th>
     </tr>
     <c:forEach var="user" items="${model.users}">
