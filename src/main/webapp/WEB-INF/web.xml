@@ -38,7 +38,7 @@
         <filter-class>org.apache.catalina.filters.CsrfPreventionFilter</filter-class>
         <init-param>
             <param-name>entryPoints</param-name>
-            <param-value>/IndexServlet,/error-page.html,/monitoring</param-value>
+            <param-value>/IndexServlet,/error-page.html,/monitoring,/favicon.ico</param-value>
         </init-param>
     </filter>
     <filter-mapping>
