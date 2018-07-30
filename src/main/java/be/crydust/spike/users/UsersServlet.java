@@ -1,5 +1,7 @@
 package be.crydust.spike.users;
 
+import org.apache.commons.beanutils.BeanUtils;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.HttpConstraint;
 import javax.servlet.annotation.ServletSecurity;
@@ -8,11 +10,19 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.ValidationException;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -34,28 +44,35 @@ public class UsersServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        LOGGER.info("UsersServlet.doPost");
         final String button = request.getParameter("button");
+        LOGGER.info("button = " + button);
         if (button == null || button.isEmpty()) {
             response.setStatus(SC_BAD_REQUEST);
             return;
         }
         final FilteredRequest filteredRequest = new FilteredRequest(button, request.getParameterMap());
         if (button.startsWith("deleteUserRole:")) {
-            final String name = filteredRequest.getParameter("name");
-            final String role = filteredRequest.getParameter("role");
+            final InputAndViolations<DeleteUserRoleInputModel> inputAndViolations = filteredRequest.read(new DeleteUserRoleInputModel());
+            LOGGER.info("inputAndViolations = " + inputAndViolations);
         } else if (button.startsWith("addRoleToUser:")) {
-            final String name = filteredRequest.getParameter("name");
-            final String role = filteredRequest.getParameter("role");
+            final InputAndViolations<AddRoleToUserInputModel> inputAndViolations = filteredRequest.read(new AddRoleToUserInputModel());
+            LOGGER.info("inputAndViolations = " + inputAndViolations);
         } else if (button.startsWith("removeUser:")) {
-            final String name = filteredRequest.getParameter("name");
+            final InputAndViolations<RemoveUserInputModel> inputAndViolations = filteredRequest.read(new RemoveUserInputModel());
+            LOGGER.info("inputAndViolations = " + inputAndViolations);
         } else if (button.startsWith("createUser:")) {
-            final String name = filteredRequest.getParameter("name");
-            final String password = filteredRequest.getParameter("password");
-            final String role = filteredRequest.getParameter("role");
+            final InputAndViolations<CreateUserInputModel> inputAndViolations = filteredRequest.read(new CreateUserInputModel());
+            LOGGER.info("inputAndViolations = " + inputAndViolations);
         } else {
             response.setStatus(SC_NOT_FOUND);
+            return;
         }
+
+        final String url = response.encodeRedirectURL("/UsersServlet");
+        response.sendRedirect(url);
+
     }
 
     @Override
@@ -70,6 +87,113 @@ public class UsersServlet extends HttpServlet {
             writeResponse(request, response, UsersViewModel.createError("Could not load users."));
         }
 
+    }
+
+    public static class DeleteUserRoleInputModel {
+        @NotBlank
+        @Size(min = 1, max = 64)
+        private String name;
+        @NotBlank
+        @Size(min = 1, max = 64)
+        private String role;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getRole() {
+            return role;
+        }
+
+        public void setRole(String role) {
+            this.role = role;
+        }
+
+        @Override
+        public String toString() {
+            return "DeleteUserRoleInputModel{" +
+                    "name='" + name + '\'' +
+                    ", role='" + role + '\'' +
+                    '}';
+        }
+    }
+
+    public static class AddRoleToUserInputModel {
+        @NotBlank
+        @Size(min = 1, max = 64)
+        private String name;
+        @NotBlank
+        @Size(min = 1, max = 64)
+        private String role;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getRole() {
+            return role;
+        }
+
+        public void setRole(String role) {
+            this.role = role;
+        }
+    }
+
+    public static class RemoveUserInputModel {
+        @NotBlank
+        @Size(min = 1, max = 64)
+        private String name;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+    }
+
+    public static class CreateUserInputModel {
+        @NotBlank
+        @Size(min = 1, max = 64)
+        private String name;
+        @NotBlank
+        private String pasword;
+        @NotBlank
+        @Size(min = 1, max = 64)
+        private String role;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getPasword() {
+            return pasword;
+        }
+
+        public void setPasword(String pasword) {
+            this.pasword = pasword;
+        }
+
+        public String getRole() {
+            return role;
+        }
+
+        public void setRole(String role) {
+            this.role = role;
+        }
     }
 
     private static class FilteredRequest {
@@ -94,26 +218,64 @@ public class UsersServlet extends HttpServlet {
             }
         }
 
-        String getParameter(String name) {
-            final String[] values = parameterMap.get(name);
-            if (values == null || values.length == 0) {
-                return null;
+//        String getParameter(String name) {
+//            final String[] values = parameterMap.get(name);
+//            if (values == null || values.length == 0) {
+//                return null;
+//            }
+//            return values[0];
+//        }
+//
+//        String[] getParameterValues(String name) {
+//            return parameterMap.get(name);
+//        }
+//
+//        Map<String, String[]> getParameterMap() {
+//            return parameterMap;
+//        }
+//
+//        Enumeration<String> getParameterNames() {
+//            return Collections.enumeration(parameterMap.keySet());
+//        }
+
+        <T> InputAndViolations<T> read(T input) {
+            try {
+                BeanUtils.populate(input, parameterMap);
+                final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+                final Validator validator = factory.getValidator();
+                Set<ConstraintViolation<T>> violations = validator.validate(input);
+                return new InputAndViolations<>(input, violations);
+            } catch (IllegalAccessException | InvocationTargetException | ValidationException | IllegalArgumentException e) {
+                e.printStackTrace();
             }
-            return values[0];
+            return new InputAndViolations<>(input, Collections.emptySet());
+        }
+    }
+
+    private static class InputAndViolations<T> {
+        private final T input;
+        private final Set<ConstraintViolation<T>> violations;
+
+        private InputAndViolations(T input, Set<ConstraintViolation<T>> violations) {
+            this.input = input;
+            this.violations = violations;
         }
 
-        String[] getParameterValues(String name) {
-            return parameterMap.get(name);
+        public T getInput() {
+            return input;
         }
 
-        Map<String, String[]> getParameterMap() {
-            return parameterMap;
+        public Set<ConstraintViolation<T>> getViolations() {
+            return violations;
         }
 
-        Enumeration<String> getParameterNames() {
-            return Collections.enumeration(parameterMap.keySet());
+        @Override
+        public String toString() {
+            return "InputAndViolations{" +
+                    "input=" + input +
+                    ", violations=" + violations +
+                    '}';
         }
-
     }
 
 }
