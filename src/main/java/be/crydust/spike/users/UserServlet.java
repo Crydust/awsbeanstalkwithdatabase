@@ -15,11 +15,11 @@ import java.util.logging.Logger;
 
 import static javax.servlet.http.HttpServletResponse.SC_METHOD_NOT_ALLOWED;
 
-@WebServlet(name = "UsersServlet", urlPatterns = {"/UsersServlet"})
+@WebServlet(name = "UserServlet", urlPatterns = {"/UserServlet"})
 @ServletSecurity(@HttpConstraint(rolesAllowed = {"admin"}))
-public class UsersServlet extends HttpServlet {
+public class UserServlet extends HttpServlet {
 
-    private static final Logger LOGGER = Logger.getLogger(UsersServlet.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(UserServlet.class.getName());
 
     private static void writeResponse(HttpServletRequest request, HttpServletResponse response, UsersViewModel model) throws IOException, ServletException {
         response.setContentType("text/html; charset=UTF-8");

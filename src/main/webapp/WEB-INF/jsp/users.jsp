@@ -22,7 +22,7 @@ Remove role from user
     <p><c:out value="${model.errorMessage}"/></p>
 </c:if>
 
-<c:url var="url" value="/UsersServlet"/>
+<c:url var="url" value="/UserServlet"/>
 <form action="${fn:escapeXml(url)}" method="POST">
     <table>
         <tr>
