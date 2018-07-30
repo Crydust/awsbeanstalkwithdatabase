@@ -80,26 +80,27 @@ Remove role from user
             </tr>
         </c:forEach>
     </table>
-</form>
 
-<h2>New user</h2>
+    <h2>New user</h2>
 
-<c:url var="url" value="/UsersServlet"/>
-<form action="${fn:escapeXml(url)}" method="POST">
+    <c:set var="subFormPrefix" value="createUser-0"/>
     <p>
-        <label for="name">Login</label><br/>
-        <input type="text" id="name" name="name"/>
+        <label for="${fn:escapeXml(subFormPrefix += ':name')}">Login</label><br/>
+        <input type="text" id="${fn:escapeXml(subFormPrefix += ':name')}"
+               name="${fn:escapeXml(subFormPrefix += ':name')}"/>
     </p>
     <p>
-        <label for="password">Password</label><br/>
-        <input type="password" id="password" name="password"/>
+        <label for="${fn:escapeXml(subFormPrefix += ':password')}">Password</label><br/>
+        <input type="password" id="${fn:escapeXml(subFormPrefix += ':password')}"
+               name="${fn:escapeXml(subFormPrefix += ':password')}"/>
     </p>
     <p>
-        <label for="role">Role (optional)</label><br/>
-        <input type="text" id="role" name="role"/>
+        <label for="${fn:escapeXml(subFormPrefix += ':role')}">Role (optional)</label><br/>
+        <input type="text" id="${fn:escapeXml(subFormPrefix += ':role')}"
+               name="${fn:escapeXml(subFormPrefix += ':role')}"/>
     </p>
     <p>
-        <button type="submit" name="button" value="createUser">Create user</button>
+        <button type="submit" name="button" value="${fn:escapeXml('createUser:' += subFormPrefix)}">Create user</button>
     </p>
 </form>
 
