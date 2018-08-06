@@ -10,7 +10,7 @@
 </head>
 <body>
 <c:url var="url" value="/EchoServlet"/>
-<form action="${fn:escapeXml(url)}" method="POST">
+<form action="${fn:escapeXml(url)}" method="post" accept-charset="UTF-8">
     <p><label for="name">What is your name?</label><br/>
         <input type="text" name="name" id="name" value=""/></p>
     <p><input type="submit" value="Answer"/></p>

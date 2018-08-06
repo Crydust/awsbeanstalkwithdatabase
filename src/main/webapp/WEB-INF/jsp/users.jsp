@@ -23,7 +23,7 @@ Remove role from user
 </c:if>
 
 <c:url var="url" value="/UsersServlet"/>
-<form action="${fn:escapeXml(url)}" method="POST">
+<form action="${fn:escapeXml(url)}" method="post" accept-charset="UTF-8">
     <table>
         <tr>
             <th>Login</th>

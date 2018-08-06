@@ -11,7 +11,7 @@
 <body>
 <h1>DbServlet</h1>
 <c:url var="url" value="/DbServlet"/>
-<form action="${fn:escapeXml(url)}" method="POST">
+<form action="${fn:escapeXml(url)}" method="post" accept-charset="UTF-8">
     <p>
         <input type="submit" value="Test database connection"/>
     </p>
