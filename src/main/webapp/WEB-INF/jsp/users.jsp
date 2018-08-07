@@ -39,14 +39,12 @@ Remove role from user
                             <li>
                                 <c:out value="${role}"/>
                                     ${' '}
-                                <c:set var="subFormPrefix"
-                                       value="deleteUserRole-${userStatus.index}-${roleStatus.index}"/>
-                                <input type="hidden" name="${fn:escapeXml(subFormPrefix += ':name')}"
-                                       value="${fn:escapeXml(user.name)}"/>
-                                <input type="hidden" name="${fn:escapeXml(subFormPrefix += ':role')}"
-                                       value="${fn:escapeXml(role)}"/>
-                                <button type="submit" name="button"
-                                        value="${fn:escapeXml('deleteUserRole:' += subFormPrefix)}">
+                                <button type="submit" name="deleteUserRoleButton"
+                                        value="${fn:escapeXml(
+                                        fn:replace(fn:replace(user.name, '\\', '\\\\'), ',' , '\\,') +=
+                                        ',' +=
+                                        fn:replace(fn:replace(role, '\\', '\\\\'), ',' , '\\,')
+                                        )}">
                                     Remove role
                                 </button>
                             </li>
@@ -54,25 +52,16 @@ Remove role from user
                     </ul>
                 </td>
                 <td>
-                    <c:set var="subFormPrefix"
-                           value="addRoleToUser-${userStatus.index}"/>
-                    <input type="hidden" name="${fn:escapeXml(subFormPrefix += ':name')}"
-                           value="${fn:escapeXml(user.name)}"/>
                     <p>
-                        <c:set var="escapedName" value="${fn:escapeXml(subFormPrefix += ':role')}"/>
+                        <c:set var="escapedName" value="${'addRoleToUser.' += fn:escapeXml(user.name) += '.role'}"/>
                         <label for="${escapedName}">Role</label><br/>
                         <input type="text" id="${escapedName}" name="${escapedName}"/><br/>
-                        <button type="submit" name="button"
-                                value="${fn:escapeXml('addRoleToUser:' += subFormPrefix)}">
+                        <button type="submit" name="addRoleToUserButton" value="${fn:escapeXml(user.name)}">
                             Add role to user
                         </button>
                     </p>
                     <p>
-                        <c:set var="subFormPrefix"
-                               value="removeUser-${userStatus.index}"/>
-                        <input type="hidden" name="${fn:escapeXml(subFormPrefix += ':name')}"
-                               value="${fn:escapeXml(user.name)}"/>
-                        <button type="submit" name="button" value="${fn:escapeXml('removeUser:' += subFormPrefix)}">
+                        <button type="submit" name="removeUserButton" value="${fn:escapeXml(user.name)}">
                             Remove user
                         </button>
                     </p>
@@ -83,24 +72,20 @@ Remove role from user
 
     <h2>New user</h2>
 
-    <c:set var="subFormPrefix" value="createUser-0"/>
     <p>
-        <label for="${fn:escapeXml(subFormPrefix += ':name')}">Login</label><br/>
-        <input type="text" id="${fn:escapeXml(subFormPrefix += ':name')}"
-               name="${fn:escapeXml(subFormPrefix += ':name')}"/>
+        <label for="createUser.name">Login</label><br/>
+        <input type="text" id="createUser.name" name="createUser.name"/>
     </p>
     <p>
-        <label for="${fn:escapeXml(subFormPrefix += ':password')}">Password</label><br/>
-        <input type="password" id="${fn:escapeXml(subFormPrefix += ':password')}"
-               name="${fn:escapeXml(subFormPrefix += ':password')}"/>
+        <label for="createUser.password">Password</label><br/>
+        <input type="password" id="createUser.password" name="createUser.password"/>
     </p>
     <p>
-        <label for="${fn:escapeXml(subFormPrefix += ':role')}">Role (optional)</label><br/>
-        <input type="text" id="${fn:escapeXml(subFormPrefix += ':role')}"
-               name="${fn:escapeXml(subFormPrefix += ':role')}"/>
+        <label for="createUser.role">Role (optional)</label><br/>
+        <input type="text" id="createUser.role" name="createUser.role"/>
     </p>
     <p>
-        <button type="submit" name="button" value="${fn:escapeXml('createUser:' += subFormPrefix)}">Create user</button>
+        <button type="submit" name="createUserButton" value="">Create user</button>
     </p>
 </form>
 
