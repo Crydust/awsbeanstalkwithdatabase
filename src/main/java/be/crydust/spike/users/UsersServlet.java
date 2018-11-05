@@ -67,10 +67,10 @@ public class UsersServlet extends HttpServlet {
             final DataSource ds = RepositoryCommons.lookupDataSource();
             final UserRepository repository = new UserRepository(ds);
             final List<User> users = repository.findAll();
-            writeResponse(request, response, UsersBackingBean.createSuccess(users));
+            // writeResponse(request, response, UsersBackingBean.createSuccess(users));
         } catch (RepositoryException e) {
             LOGGER.log(Level.SEVERE, "Could not load users.", e);
-            writeResponse(request, response, UsersBackingBean.createError("Could not load users."));
+            // writeResponse(request, response, UsersBackingBean.createError("Could not load users."));
         }
 
     }
