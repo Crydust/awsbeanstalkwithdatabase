@@ -25,6 +25,7 @@
         <maven-install-plugin.version>2.5.2</maven-install-plugin.version>
         <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
         <maven-site-plugin.version>3.7</maven-site-plugin.version>
+        <versions-maven-plugin.version>2.7</versions-maven-plugin.version>
         <HikariCP.version>2.7.8</HikariCP.version>
         <slf4j.version>1.7.25</slf4j.version>
         <flyway-core.version>5.1.1</flyway-core.version>
