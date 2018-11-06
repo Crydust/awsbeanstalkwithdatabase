@@ -8,7 +8,7 @@ public class CreateUserBackingBean {
     @Size(min = 1, max = 64)
     private String name;
     @NotBlank
-    private String pasword;
+    private String password;
     @NotBlank
     @Size(min = 1, max = 64)
     private String role;
@@ -21,12 +21,12 @@ public class CreateUserBackingBean {
         this.name = name;
     }
 
-    public String getPasword() {
-        return pasword;
+    public String getPassword() {
+        return password;
     }
 
-    public void setPasword(String pasword) {
-        this.pasword = pasword;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getRole() {

@@ -19,31 +19,37 @@ Remove role from user
 <h2>Existing users</h2>
 
 <c:if test="${model.error}">
-    <p><c:out value="${model.errorMessage}"/></p>
+    <ul>
+        <c:forEach var="errorMessage" items="${model.errorMessages}">
+            <li><c:out value="${errorMessage}"/></li>
+        </c:forEach>
+    </ul>
 </c:if>
 
 <c:url var="url" value="/UsersServlet"/>
 <form action="${fn:escapeXml(url)}" method="post" accept-charset="UTF-8">
-    <table>
+    <table border="1">
         <tr>
             <th>Login</th>
             <th>Roles</th>
             <th>Actions</th>
         </tr>
-        <c:forEach var="user" items="${model.users}" varStatus="userStatus">
+        <c:forEach var="userEntry" items="${model.usersByName}" varStatus="userStatus">
+            <c:set var="userName" value="${userEntry.key}"/>
+            <c:set var="userRoles" value="${userEntry.value.rolesByName.keySet()}"/>
             <tr>
-                <td><c:out value="${user.name}"/></td>
+                <td><c:out value="${userName}"/></td>
                 <td>
                     <ul>
-                        <c:forEach var="role" items="${user.roles}" varStatus="roleStatus">
+                        <c:forEach var="userRole" items="${userRoles}" varStatus="roleStatus">
                             <li>
-                                <c:out value="${role}"/>
+                                <c:out value="${userRole}"/>
                                     ${' '}
                                 <button type="submit" name="deleteUserRoleButton"
                                         value="${fn:escapeXml(
-                                        fn:replace(fn:replace(user.name, '\\', '\\\\'), ',' , '\\,') +=
+                                        fn:replace(fn:replace(userName, '\\', '\\\\'), ',' , '\\,') +=
                                         ',' +=
-                                        fn:replace(fn:replace(role, '\\', '\\\\'), ',' , '\\,')
+                                        fn:replace(fn:replace(userRole, '\\', '\\\\'), ',' , '\\,')
                                         )}">
                                     Remove role
                                 </button>
@@ -53,15 +59,16 @@ Remove role from user
                 </td>
                 <td>
                     <p>
-                        <c:set var="escapedName" value="${'addRoleToUser.' += fn:escapeXml(user.name) += '.role'}"/>
+                        <c:set var="escapedName" value="${'addRoleToUser.' += fn:escapeXml(userName) += '.role'}"/>
                         <label for="${escapedName}">Role</label><br/>
-                        <input type="text" id="${escapedName}" name="${escapedName}"/><br/>
-                        <button type="submit" name="addRoleToUserButton" value="${fn:escapeXml(user.name)}">
+                        <input type="text" id="${escapedName}" name="${escapedName}"
+                               value="${fn:escapeXml(userEntry.value.addRoleToUser.role)}"/><br/>
+                        <button type="submit" name="addRoleToUserButton" value="${fn:escapeXml(userName)}">
                             Add role to user
                         </button>
                     </p>
                     <p>
-                        <button type="submit" name="removeUserButton" value="${fn:escapeXml(user.name)}">
+                        <button type="submit" name="removeUserButton" value="${fn:escapeXml(userName)}">
                             Remove user
                         </button>
                     </p>
@@ -74,15 +81,18 @@ Remove role from user
 
     <p>
         <label for="createUser.name">Login</label><br/>
-        <input type="text" id="createUser.name" name="createUser.name"/>
+        <input type="text" id="createUser.name" name="createUser.name"
+               value="${fn:escapeXml(model.createUser.name)}"/>
     </p>
     <p>
         <label for="createUser.password">Password</label><br/>
-        <input type="password" id="createUser.password" name="createUser.password"/>
+        <input type="password" id="createUser.password" name="createUser.password"
+               value="${fn:escapeXml(model.createUser.password)}"/>
     </p>
     <p>
         <label for="createUser.role">Role (optional)</label><br/>
-        <input type="text" id="createUser.role" name="createUser.role"/>
+        <input type="text" id="createUser.role" name="createUser.role"
+               value="${fn:escapeXml(model.createUser.role)}"/>
     </p>
     <p>
         <button type="submit" name="createUserButton" value="">Create user</button>
