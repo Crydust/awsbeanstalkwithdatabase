@@ -1,4 +1,4 @@
-package be.crydust.spike;
+package be.crydust.spike.terminal;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;

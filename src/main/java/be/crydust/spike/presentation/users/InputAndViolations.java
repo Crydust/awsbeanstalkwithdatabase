@@ -1,4 +1,4 @@
-package be.crydust.spike.users;
+package be.crydust.spike.presentation.users;
 
 import javax.validation.ConstraintViolation;
 import java.util.Set;

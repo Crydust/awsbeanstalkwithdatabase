@@ -1,4 +1,4 @@
-package be.crydust.spike.users;
+package be.crydust.spike.business.users.entity;
 
 import java.util.HashSet;
 import java.util.Objects;

@@ -1,4 +1,4 @@
-package be.crydust.spike;
+package be.crydust.spike.presentation.sample;
 
 import org.flywaydb.core.Flyway;
 

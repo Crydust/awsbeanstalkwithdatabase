@@ -1,4 +1,4 @@
-package be.crydust.spike.users;
+package be.crydust.spike.presentation.users;
 
 import org.apache.commons.beanutils.BeanUtils;
 

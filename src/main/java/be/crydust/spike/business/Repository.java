@@ -1,4 +1,4 @@
-package be.crydust.spike.users;
+package be.crydust.spike.business;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -10,15 +10,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-public final class RepositoryCommons {
+import static java.util.Objects.requireNonNull;
 
-    private RepositoryCommons() {
+public final class Repository {
+
+    private Repository() {
         throw new UnsupportedOperationException("this class is not supposed to be instantiated");
     }
 
-    public static DataSource lookupDataSource() {
+    public static DataSource lookupDataSource() throws RepositoryException {
         final String contextName = "java:comp/env";
         final String datasourceName = "jdbc/MyDataSource";
         try {
@@ -29,11 +30,11 @@ public final class RepositoryCommons {
         }
     }
 
-    public static <T> List<T> sqlToList(DataSource ds, String sql, ParameterSetter parameterSetter, ResultSetMapper<T> resultSetMapper) {
-        Objects.requireNonNull(ds, "ds");
-        Objects.requireNonNull(sql, "sql");
-        Objects.requireNonNull(parameterSetter, "parameterSetter");
-        Objects.requireNonNull(resultSetMapper, "resultSetMapper");
+    public static <T> List<T> sqlToList(DataSource ds, String sql, ParameterSetter parameterSetter, ResultSetMapper<T> resultSetMapper) throws RepositoryException {
+        requireNonNull(ds, "ds");
+        requireNonNull(sql, "sql");
+        requireNonNull(parameterSetter, "parameterSetter");
+        requireNonNull(resultSetMapper, "resultSetMapper");
         final List<T> list = new ArrayList<>();
         try (final Connection con = ds.getConnection()) {
             con.setReadOnly(true);
@@ -48,7 +49,7 @@ public final class RepositoryCommons {
                 }
             }
         } catch (SQLException e) {
-            final String sqlOnOneLine = sql.replace("[\r\n]", " ");
+            final String sqlOnOneLine = sql.replaceAll("[\r\n]+", " ");
             throw new RepositoryException("Could not execute query '" + sqlOnOneLine + "'", e);
         }
         return list;
@@ -62,5 +63,27 @@ public final class RepositoryCommons {
     @FunctionalInterface
     public interface ResultSetMapper<T> {
         T map(ResultSet rs) throws SQLException;
+    }
+
+    public static class RepositoryException extends RuntimeException {
+        public RepositoryException() {
+            super();
+        }
+
+        public RepositoryException(String message) {
+            super(message);
+        }
+
+        public RepositoryException(String message, Throwable cause) {
+            super(message, cause);
+        }
+
+        public RepositoryException(Throwable cause) {
+            super(cause);
+        }
+
+        public RepositoryException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+            super(message, cause, enableSuppression, writableStackTrace);
+        }
     }
 }

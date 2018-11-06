@@ -1,4 +1,7 @@
-package be.crydust.spike.users;
+package be.crydust.spike.presentation.users;
+
+import be.crydust.spike.business.users.boundary.UserFacade;
+import be.crydust.spike.business.users.entity.User;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.HttpConstraint;
@@ -7,10 +10,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.sql.DataSource;
+import javax.ws.rs.WebApplicationException;
 import java.io.IOException;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
@@ -64,15 +66,12 @@ public class UsersServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
-            final DataSource ds = RepositoryCommons.lookupDataSource();
-            final UserRepository repository = new UserRepository(ds);
-            final List<User> users = repository.findAll();
-            // writeResponse(request, response, UsersBackingBean.createSuccess(users));
-        } catch (RepositoryException e) {
-            LOGGER.log(Level.SEVERE, "Could not load users.", e);
-            // writeResponse(request, response, UsersBackingBean.createError("Could not load users."));
+            final List<User> users = new UserFacade().findAll();
+            writeResponse(request, response, UsersBackingBean.create(users));
+        } catch (WebApplicationException e) {
+            response.setStatus(e.getResponse().getStatus());
+            response.getWriter().write(e.getMessage());
         }
-
     }
 
 }

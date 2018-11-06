@@ -1,7 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<jsp:useBean id="model" scope="request" type="be.crydust.spike.users.UsersBackingBean"/>
+<jsp:useBean id="model" scope="request" type="be.crydust.spike.presentation.users.UsersBackingBean"/>
 <!DOCTYPE html>
 <html>
 <head>

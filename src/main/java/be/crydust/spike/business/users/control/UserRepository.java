@@ -1,4 +1,7 @@
-package be.crydust.spike.users;
+package be.crydust.spike.business.users.control;
+
+import be.crydust.spike.business.Repository;
+import be.crydust.spike.business.users.entity.User;
 
 import javax.sql.DataSource;
 import java.util.HashSet;
@@ -27,7 +30,7 @@ public class UserRepository {
                 "left join user_roles\n" +
                 "on users.user_name = user_roles.user_name\n";
 
-        final List<User> usersWithOneRole = RepositoryCommons.sqlToList(
+        final List<User> usersWithOneRole = Repository.sqlToList(
                 ds,
                 sql,
                 ps -> {

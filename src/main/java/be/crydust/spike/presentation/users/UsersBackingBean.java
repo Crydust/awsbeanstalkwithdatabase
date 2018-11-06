@@ -1,4 +1,6 @@
-package be.crydust.spike.users;
+package be.crydust.spike.presentation.users;
+
+import be.crydust.spike.business.users.entity.User;
 
 import java.util.LinkedHashMap;
 import java.util.List;

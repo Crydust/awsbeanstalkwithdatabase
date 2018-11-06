@@ -1,4 +1,4 @@
-package be.crydust.spike.users;
+package be.crydust.spike.presentation.users;
 
 import java.util.Map;
 
