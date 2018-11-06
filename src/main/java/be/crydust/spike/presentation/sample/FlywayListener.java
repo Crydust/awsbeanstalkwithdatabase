@@ -1,6 +1,7 @@
 package be.crydust.spike.presentation.sample;
 
 import org.flywaydb.core.Flyway;
+import org.flywaydb.core.api.configuration.FluentConfiguration;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletContextEvent;
@@ -21,9 +22,8 @@ public class FlywayListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
-        final Flyway flyway = new Flyway();
-        flyway.setDataSource(ds);
-        flyway.migrate();
+        new Flyway(new FluentConfiguration().dataSource(ds))
+                .migrate();
     }
 
     @Override
