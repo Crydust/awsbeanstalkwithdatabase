@@ -1,6 +1,7 @@
 package be.crydust.spike.presentation.users;
 
 import be.crydust.spike.business.users.entity.User;
+import be.crydust.spike.presentation.ErrorMessage;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -14,16 +15,20 @@ public class UsersBackingBean {
     private final Map<String, UserBackingBean> usersByName;
     private final CreateUserBackingBean createUser;
     private final boolean error;
-    private final List<String> errorMessages;
+    private final List<ErrorMessage> errorMessages;
 
-    public UsersBackingBean(Map<String, UserBackingBean> usersByName, CreateUserBackingBean createUser) {
+    private UsersBackingBean(Map<String, UserBackingBean> usersByName, CreateUserBackingBean createUser, boolean error, List<ErrorMessage> errorMessages) {
         this.usersByName = usersByName;
         this.createUser = createUser;
-        this.error = false;
-        this.errorMessages = emptyList();
+        this.error = error;
+        this.errorMessages = errorMessages;
     }
 
     public static UsersBackingBean create(List<User> users) {
+        return create(users, new CreateUserBackingBean(), false, emptyList());
+    }
+
+    public static UsersBackingBean create(List<User> users, CreateUserBackingBean createUser, boolean error, List<ErrorMessage> errorMessages) {
         return new UsersBackingBean(
                 users.stream()
                         .collect(toMap(
@@ -42,8 +47,9 @@ public class UsersBackingBean {
                                 (a, b) -> b,
                                 LinkedHashMap::new
                         )),
-                new CreateUserBackingBean()
-        );
+                createUser,
+                error,
+                errorMessages);
     }
 
     public Map<String, UserBackingBean> getUsersByName() {
@@ -58,7 +64,7 @@ public class UsersBackingBean {
         return error;
     }
 
-    public List<String> getErrorMessages() {
+    public List<ErrorMessage> getErrorMessages() {
         return errorMessages;
     }
 }

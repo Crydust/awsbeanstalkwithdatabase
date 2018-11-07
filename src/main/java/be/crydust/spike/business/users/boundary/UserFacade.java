@@ -20,4 +20,9 @@ public class UserFacade {
             throw new WebApplicationException("Could not load users.", e);
         }
     }
+
+    public User create(String name, String password, String role) {
+        return new UserRepository(Repository.lookupDataSource())
+                .create(name, password, role);
+    }
 }

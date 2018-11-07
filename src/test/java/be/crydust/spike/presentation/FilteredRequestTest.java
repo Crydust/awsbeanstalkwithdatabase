@@ -1,20 +1,17 @@
-package be.crydust.spike.presentation.users;
+package be.crydust.spike.presentation;
 
 import org.junit.Test;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Path;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.AbstractList;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static java.util.Collections.emptyMap;
+import static java.util.stream.Collectors.toList;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
@@ -79,11 +76,11 @@ public class FilteredRequestTest {
         final Map<String, String[]> parameters = emptyMap();
         final FilteredRequest filteredRequest = new FilteredRequest(button, parameters);
 
-        final InputAndViolations<DummyBean> inputAndViolations = filteredRequest.read(new DummyBean());
-        final Set<ConstraintViolation<DummyBean>> violations = inputAndViolations.getViolations();
+        final InputAndErrorMessages<DummyBean> inputAndErrorMessages = filteredRequest.read(new DummyBean());
 
-        assertThat(violations, is(not(empty())));
-        assertThat(violationsToPathStrings(violations), contains("/name"));
+        final List<ErrorMessage> errorMessages = inputAndErrorMessages.getErrorMessages();
+        assertThat(errorMessages, is(not(empty())));
+        assertThat(errorMessages.stream().map(ErrorMessage::getFieldId).collect(toList()), contains("name"));
     }
 
     @Test
@@ -93,10 +90,10 @@ public class FilteredRequestTest {
         parameters.put("name", new String[]{"example"});
         final FilteredRequest filteredRequest = new FilteredRequest(button, parameters);
 
-        final InputAndViolations<DummyBean> inputAndViolations = filteredRequest.read(new DummyBean());
+        final InputAndErrorMessages<DummyBean> inputAndErrorMessages = filteredRequest.read(new DummyBean());
 
-        assertThat(inputAndViolations.getViolations(), is(empty()));
-        assertThat(inputAndViolations.getInput().getName(), is("example"));
+        assertThat(inputAndErrorMessages.getErrorMessages(), is(empty()));
+        assertThat(inputAndErrorMessages.getInput().getName(), is("example"));
     }
 
     @Test
@@ -106,10 +103,10 @@ public class FilteredRequestTest {
         parameters.put("prefix:name", new String[]{"example"});
         final FilteredRequest filteredRequest = new FilteredRequest(button, parameters);
 
-        final InputAndViolations<DummyBean> inputAndViolations = filteredRequest.read(new DummyBean());
+        final InputAndErrorMessages<DummyBean> inputAndErrorMessages = filteredRequest.read(new DummyBean());
 
-        assertThat(inputAndViolations.getViolations(), is(empty()));
-        assertThat(inputAndViolations.getInput().getName(), is("example"));
+        assertThat(inputAndErrorMessages.getErrorMessages(), is(empty()));
+        assertThat(inputAndErrorMessages.getInput().getName(), is("example"));
     }
 
     @Test
@@ -119,10 +116,10 @@ public class FilteredRequestTest {
         parameters.put("prefix:name", new String[]{"example"});
         final FilteredRequest filteredRequest = new FilteredRequest(button, parameters);
 
-        final InputAndViolations<DummyBean> inputAndViolations = filteredRequest.read(new DummyBean());
+        final InputAndErrorMessages<DummyBean> inputAndErrorMessages = filteredRequest.read(new DummyBean());
 
-        assertThat(inputAndViolations.getViolations(), is(empty()));
-        assertThat(inputAndViolations.getInput().getName(), is("example"));
+        assertThat(inputAndErrorMessages.getErrorMessages(), is(empty()));
+        assertThat(inputAndErrorMessages.getInput().getName(), is("example"));
     }
 
     @Test
@@ -131,10 +128,22 @@ public class FilteredRequestTest {
         final Map<String, String[]> parameters = emptyMap();
         final FilteredRequest filteredRequest = new FilteredRequest(button, parameters);
 
-        final InputAndViolations<DummyBean> inputAndViolations = filteredRequest.read(new DummyBean());
+        final InputAndErrorMessages<DummyBean> inputAndErrorMessages = filteredRequest.read(new DummyBean());
 
-        assertThat(inputAndViolations.getViolations(), is(empty()));
-        assertThat(inputAndViolations.getInput().getName(), is("example"));
+        assertThat(inputAndErrorMessages.getErrorMessages(), is(empty()));
+        assertThat(inputAndErrorMessages.getInput().getName(), is("example"));
+    }
+
+    @Test
+    public void readFromButtonWithCommaInValue() {
+        final String button = "button:name=" + FilteredRequest.escape("te,s\\t");
+        final Map<String, String[]> parameters = emptyMap();
+        final FilteredRequest filteredRequest = new FilteredRequest(button, parameters);
+
+        final InputAndErrorMessages<DummyBean> inputAndErrorMessages = filteredRequest.read(new DummyBean());
+
+        assertThat(inputAndErrorMessages.getErrorMessages(), is(empty()));
+        assertThat(inputAndErrorMessages.getInput().getName(), is("te,s\\t"));
     }
 
     @Test
@@ -144,27 +153,12 @@ public class FilteredRequestTest {
         parameters.put("prefix:roles", new String[]{"b", "c"});
         final FilteredRequest filteredRequest = new FilteredRequest(button, parameters);
 
-        final InputAndViolations<DummyBean> inputAndViolations = filteredRequest.read(new DummyBean());
+        final InputAndErrorMessages<DummyBean> inputAndErrorMessages = filteredRequest.read(new DummyBean());
 
-        assertThat(inputAndViolations.getViolations(), is(empty()));
-        assertThat(inputAndViolations.getInput().getName(), is("example"));
-        assertThat(inputAndViolations.getInput().getRoles(), contains("a", "b", "c"));
+        assertThat(inputAndErrorMessages.getErrorMessages(), is(empty()));
+        assertThat(inputAndErrorMessages.getInput().getName(), is("example"));
+        assertThat(inputAndErrorMessages.getInput().getRoles(), contains("a", "b", "c"));
     }
 
-    private static List<String> violationsToPathStrings(Set<ConstraintViolation<DummyBean>> violations) {
-        final List<String> violationPaths = new ArrayList<>(violations.size());
-        for (ConstraintViolation<DummyBean> violation : violations) {
-            final Iterator<Path.Node> iterator = violation.getPropertyPath().iterator();
-            final StringBuilder sb = new StringBuilder("/");
-            while (iterator.hasNext()) {
-                sb.append(iterator.next().getName());
-                if (iterator.hasNext()) {
-                    sb.append("/");
-                }
-            }
-            violationPaths.add(sb.toString());
-        }
-        return violationPaths;
-    }
 
 }

@@ -9,7 +9,6 @@ public class CreateUserBackingBean {
     private String name;
     @NotBlank
     private String password;
-    @NotBlank
     @Size(min = 1, max = 64)
     private String role;
 

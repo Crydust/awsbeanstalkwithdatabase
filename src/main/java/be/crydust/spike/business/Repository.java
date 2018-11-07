@@ -55,6 +55,23 @@ public final class Repository {
         return list;
     }
 
+    public static void executeUpdate(DataSource ds, String sql, ParameterSetter parameterSetter) throws RepositoryException {
+        requireNonNull(ds, "ds");
+        requireNonNull(sql, "sql");
+        requireNonNull(parameterSetter, "parameterSetter");
+        try (final Connection con = ds.getConnection()) {
+            con.setReadOnly(false);
+            try (final PreparedStatement ps = con.prepareStatement(sql)) {
+                ps.setQueryTimeout(5 /* seconds */);
+                parameterSetter.accept(ps);
+                ps.executeUpdate();
+            }
+        } catch (SQLException e) {
+            final String sqlOnOneLine = sql.replaceAll("[\r\n]+", " ");
+            throw new RepositoryException("Could not execute update '" + sqlOnOneLine + "'", e);
+        }
+    }
+
     @FunctionalInterface
     public interface ParameterSetter {
         void accept(PreparedStatement ps) throws SQLException;

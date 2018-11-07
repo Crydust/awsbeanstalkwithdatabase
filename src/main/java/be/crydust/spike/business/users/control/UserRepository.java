@@ -2,8 +2,12 @@ package be.crydust.spike.business.users.control;
 
 import be.crydust.spike.business.Repository;
 import be.crydust.spike.business.users.entity.User;
+import org.apache.catalina.realm.SecretKeyCredentialHandler;
 
 import javax.sql.DataSource;
+import javax.ws.rs.WebApplicationException;
+import java.security.NoSuchAlgorithmException;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +27,7 @@ public class UserRepository {
         this.ds = ds;
     }
 
-    public List<User> findAll(){
+    public List<User> findAll() {
         //language=PostgreSQL
         String sql = "select users.user_name, user_roles.role_name\n" +
                 "from users\n" +
@@ -64,4 +68,34 @@ public class UserRepository {
         return users;
     }
 
+    public User create(String name, String password, String role) {
+        //language=PostgreSQL
+        String sql = "insert into users (user_name, user_pass)\n" +
+                "values (?, ?)";
+        Repository.executeUpdate(ds, sql, (ps) -> {
+            ps.setString(1, name);
+            ps.setString(2, encodeWithTomcat(password));
+        });
+        //language=PostgreSQL
+        String sql2 = "insert into user_roles (user_name, role_name)\n" +
+                "values (?, ?)";
+        Repository.executeUpdate(ds, sql2, (ps) -> {
+            ps.setString(1, name);
+            ps.setString(2, role);
+        });
+        return new User(name, Collections.singleton(role));
+    }
+
+    private static String encodeWithTomcat(String credentials) {
+        try {
+            SecretKeyCredentialHandler h = new SecretKeyCredentialHandler();
+            h.setAlgorithm("PBKDF2WithHmacSHA256");
+            h.setIterations(185000);
+            h.setSaltLength(8);
+            h.setKeyLength(256);
+            return h.mutate(credentials);
+        } catch (NoSuchAlgorithmException e) {
+            throw new WebApplicationException("failed to encrypt password", e);
+        }
+    }
 }

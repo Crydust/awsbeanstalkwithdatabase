@@ -1,4 +1,4 @@
-package be.crydust.spike.presentation.users;
+package be.crydust.spike.presentation;
 
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.apache.commons.beanutils.ConvertUtilsBean;
@@ -6,12 +6,14 @@ import org.apache.commons.beanutils.PropertyUtilsBean;
 import org.apache.commons.beanutils.SuppressPropertiesBeanIntrospector;
 
 import javax.validation.ConstraintViolation;
+import javax.validation.Path;
 import javax.validation.Validation;
 import javax.validation.ValidationException;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,14 +23,14 @@ import java.util.regex.Pattern;
 import static java.util.Collections.emptyMap;
 import static java.util.stream.Collectors.toMap;
 
-class FilteredRequest {
+public class FilteredRequest {
 
     private static final Pattern UNESCAPED_COMMA = Pattern.compile("(?<!\\\\),");
 
     private final String button;
     private final Map<String, String[]> parameterMap;
 
-    FilteredRequest(String button, Map<String, String[]> parameterMap) {
+    public FilteredRequest(String button, Map<String, String[]> parameterMap) {
         this.button = button;
         this.parameterMap = parameterMap;
     }
@@ -63,12 +65,11 @@ class FilteredRequest {
         return buttonParameters;
     }
 
-    // unused, but this is how the jsp escapes csv values
-//    private static String escape(String escapedValue) {
-//        return escapedValue
-//                .replace("\\", "\\\\")
-//                .replace(",", "\\,");
-//    }
+    static String escape(String escapedValue) {
+        return escapedValue
+                .replace("\\", "\\\\")
+                .replace(",", "\\,");
+    }
 
     private static String unescape(String escapedValue) {
         return escapedValue
@@ -135,7 +136,13 @@ class FilteredRequest {
         return result;
     }
 
-    <T> InputAndViolations<T> read(T input) {
+    private String getPrefix() {
+        final int colon = button.indexOf(':');
+        final String prefix = button.substring(0, colon + 1);
+        return prefix;
+    }
+
+    public <T> InputAndErrorMessages<T> read(T input) {
         try {
             final Map<String, String[]> combinedParameterMap = addIndexesToKeys(
                     combineButtonArgumentsAndParameterMap(button, parameterMap)
@@ -149,10 +156,25 @@ class FilteredRequest {
             final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
             final Validator validator = factory.getValidator();
             Set<ConstraintViolation<T>> violations = validator.validate(input);
-            return new InputAndViolations<>(input, violations);
+            return new InputAndErrorMessages<T>(input, violationsToErrorMessages(getPrefix(), violations));
         } catch (IllegalAccessException | InvocationTargetException | ValidationException | IllegalArgumentException e) {
             throw new RuntimeException(e);
         }
     }
 
+    private static <T> List<ErrorMessage> violationsToErrorMessages(String prefix, Set<ConstraintViolation<T>> violations) {
+        final List<ErrorMessage> violationPaths = new ArrayList<>(violations.size());
+        for (ConstraintViolation<T> violation : violations) {
+            final Iterator<Path.Node> iterator = violation.getPropertyPath().iterator();
+            final StringBuilder sb = new StringBuilder(prefix);
+            while (iterator.hasNext()) {
+                sb.append(iterator.next().getName());
+                if (iterator.hasNext()) {
+                    sb.append(".");
+                }
+            }
+            violationPaths.add(new ErrorMessage(sb.toString(), violation.getMessage()));
+        }
+        return violationPaths;
+    }
 }

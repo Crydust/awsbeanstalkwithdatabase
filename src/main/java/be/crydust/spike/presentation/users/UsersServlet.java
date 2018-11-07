@@ -2,6 +2,9 @@ package be.crydust.spike.presentation.users;
 
 import be.crydust.spike.business.users.boundary.UserFacade;
 import be.crydust.spike.business.users.entity.User;
+import be.crydust.spike.presentation.ErrorMessage;
+import be.crydust.spike.presentation.FilteredRequest;
+import be.crydust.spike.presentation.InputAndErrorMessages;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.HttpConstraint;
@@ -32,7 +35,7 @@ public class UsersServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         LOGGER.info("UsersServlet.doPost");
         final String button = request.getParameter("button");
         LOGGER.info("button = " + button);
@@ -42,17 +45,40 @@ public class UsersServlet extends HttpServlet {
         }
         final FilteredRequest filteredRequest = new FilteredRequest(button, request.getParameterMap());
         if (button.startsWith("deleteUserRole:")) {
-            final InputAndViolations<DeleteUserRoleBackingBean> inputAndViolations = filteredRequest.read(new DeleteUserRoleBackingBean());
-            LOGGER.info("inputAndViolations = " + inputAndViolations);
+            final InputAndErrorMessages<DeleteUserRoleBackingBean> inputAndErrorMessages = filteredRequest.read(new DeleteUserRoleBackingBean());
+            LOGGER.info("inputAndErrorMessages = " + inputAndErrorMessages);
         } else if (button.startsWith("addRoleToUser:")) {
-            final InputAndViolations<AddRoleToUserBackingBean> inputAndViolations = filteredRequest.read(new AddRoleToUserBackingBean());
-            LOGGER.info("inputAndViolations = " + inputAndViolations);
+            final InputAndErrorMessages<AddRoleToUserBackingBean> inputAndErrorMessages = filteredRequest.read(new AddRoleToUserBackingBean());
+            LOGGER.info("inputAndErrorMessages = " + inputAndErrorMessages);
         } else if (button.startsWith("removeUser:")) {
-            final InputAndViolations<RemoveUserBackingBean> inputAndViolations = filteredRequest.read(new RemoveUserBackingBean());
-            LOGGER.info("inputAndViolations = " + inputAndViolations);
+            final InputAndErrorMessages<RemoveUserBackingBean> inputAndErrorMessages = filteredRequest.read(new RemoveUserBackingBean());
+            LOGGER.info("inputAndErrorMessages = " + inputAndErrorMessages);
         } else if (button.startsWith("createUser:")) {
-            final InputAndViolations<CreateUserBackingBean> inputAndViolations = filteredRequest.read(new CreateUserBackingBean());
-            LOGGER.info("inputAndViolations = " + inputAndViolations);
+            final InputAndErrorMessages<CreateUserBackingBean> inputAndErrorMessages = filteredRequest.read(new CreateUserBackingBean());
+            LOGGER.info("inputAndErrorMessages = " + inputAndErrorMessages);
+            try {
+                final UserFacade userFacade = new UserFacade();
+                final List<User> users = userFacade.findAll();
+                final CreateUserBackingBean backingBean = inputAndErrorMessages.getInput();
+                final List<ErrorMessage> errorMessages = inputAndErrorMessages.getErrorMessages();
+                final boolean valid = errorMessages.isEmpty();
+                if (valid) {
+                    final User user = userFacade.create(backingBean.getName(), backingBean.getPassword(), backingBean.getRole());
+                    System.out.println("user = " + user);
+                } else {
+                    final UsersBackingBean model = UsersBackingBean.create(
+                            users,
+                            backingBean,
+                            true,
+                            errorMessages);
+                    writeResponse(request, response, model);
+                    return;
+                }
+            } catch (WebApplicationException e) {
+                response.setStatus(e.getResponse().getStatus());
+                response.getWriter().write(e.getMessage());
+            }
+
         } else {
             response.setStatus(SC_NOT_FOUND);
             return;
