@@ -13,3 +13,4 @@ docker-compose down --volumes
 
 # remove dangling images
 docker image prune
+
