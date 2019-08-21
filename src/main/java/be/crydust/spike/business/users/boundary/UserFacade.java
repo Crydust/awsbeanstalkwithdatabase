@@ -25,4 +25,14 @@ public class UserFacade {
         return new UserRepository(Repository.lookupDataSource())
                 .create(name, password, role);
     }
+
+    public boolean deleteUserRole(String name, String role) {
+        return new UserRepository(Repository.lookupDataSource())
+                .deleteUserRole(name, role);
+    }
+
+    public boolean addRoleToUser(String name, String role) {
+        return new UserRepository(Repository.lookupDataSource())
+                .addRoleToUser(name, role);
+    }
 }

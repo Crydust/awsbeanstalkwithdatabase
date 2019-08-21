@@ -35,4 +35,12 @@ public class AddRoleToUserBackingBean {
     public void setRole(String role) {
         this.role = role;
     }
+
+    @Override
+    public String toString() {
+        return "AddRoleToUserBackingBean{" +
+                "name='" + name + '\'' +
+                ", role='" + role + '\'' +
+                '}';
+    }
 }

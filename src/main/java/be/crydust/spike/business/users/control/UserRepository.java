@@ -86,6 +86,26 @@ public class UserRepository {
         return new User(name, Collections.singleton(role));
     }
 
+    public boolean deleteUserRole(String name, String role) {
+        //language=PostgreSQL
+        String sql = "delete from user_roles\n" +
+                "where user_name = ? and role_name = ?";
+        return Repository.executeUpdate(ds, sql, (ps) -> {
+            ps.setString(1, name);
+            ps.setString(2, role);
+        }) == 1;
+    }
+
+    public boolean addRoleToUser(String name, String role) {
+        //language=PostgreSQL
+        String sql = "insert into user_roles (user_name, role_name)\n" +
+                "values (?, ?)";
+        return Repository.executeUpdate(ds, sql, (ps) -> {
+            ps.setString(1, name);
+            ps.setString(2, role);
+        }) == 1;
+    }
+
     private static String encodeWithTomcat(String credentials) {
         try {
             SecretKeyCredentialHandler h = new SecretKeyCredentialHandler();
@@ -98,4 +118,5 @@ public class UserRepository {
             throw new WebApplicationException("failed to encrypt password", e);
         }
     }
+
 }

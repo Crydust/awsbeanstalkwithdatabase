@@ -19,9 +19,21 @@ Remove role from user
 <h2>Existing users</h2>
 
 <c:if test="${model.error}">
+    <p>ERROR!</p>
+</c:if>
+<c:if test="${not empty model.errorMessages}">
     <ul>
         <c:forEach var="errorMessage" items="${model.errorMessages}">
-            <li><a href="#${fn:escapeXml(errorMessage.fieldId)}"><c:out value="${errorMessage.message}"/></a></li>
+            <li>
+                <c:choose>
+                    <c:when test="${empty errorMessage.fieldId}">
+                        <c:out value="${errorMessage.message}"/>
+                    </c:when>
+                    <c:otherwise>
+                        <a href="#${fn:escapeXml(errorMessage.fieldId)}"><c:out value="${errorMessage.message}"/></a>
+                    </c:otherwise>
+                </c:choose>
+            </li>
         </c:forEach>
     </ul>
 </c:if>
@@ -60,14 +72,13 @@ Remove role from user
                 </td>
                 <td>
                     <p>
-                        <label for="addRoleToUser:role">Role</label><br/>
-                        <input type="text" id="addRoleToUser:role" name="addRoleToUser:role"
+                        <c:set var="prefix" value="${'addRoleToUser[' += userStatus.index += ']:'}"/>
+                        <c:set var="fieldName" value="${prefix += 'role'}"/>
+                        <label for="${fn:escapeXml(fieldName)}">Role</label><br/>
+                        <input type="text" id="${fn:escapeXml(fieldName)}" name="${fn:escapeXml(fieldName)}"
                                value="${fn:escapeXml(userEntry.value.addRoleToUser.role)}"/><br/>
                         <button type="submit" name="button"
-                                value="${fn:escapeXml(
-                                'addRoleToUser:' +=
-                                'name=' += fn:replace(fn:replace(userName, '\\', '\\\\'), ',' , '\\,')
-                                )}">
+                                value="${fn:escapeXml(prefix += 'name=' += fn:replace(fn:replace(userName, '\\', '\\\\'), ',' , '\\,'))}">
                             Add role to user
                         </button>
                     </p>

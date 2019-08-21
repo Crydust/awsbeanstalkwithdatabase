@@ -55,7 +55,7 @@ public final class Repository {
         return list;
     }
 
-    public static void executeUpdate(DataSource ds, String sql, ParameterSetter parameterSetter) throws RepositoryException {
+    public static int executeUpdate(DataSource ds, String sql, ParameterSetter parameterSetter) throws RepositoryException {
         requireNonNull(ds, "ds");
         requireNonNull(sql, "sql");
         requireNonNull(parameterSetter, "parameterSetter");
@@ -64,7 +64,7 @@ public final class Repository {
             try (final PreparedStatement ps = con.prepareStatement(sql)) {
                 ps.setQueryTimeout(5 /* seconds */);
                 parameterSetter.accept(ps);
-                ps.executeUpdate();
+                return ps.executeUpdate();
             }
         } catch (SQLException e) {
             final String sqlOnOneLine = sql.replaceAll("[\r\n]+", " ");

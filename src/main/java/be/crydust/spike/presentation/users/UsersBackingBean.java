@@ -28,6 +28,10 @@ public class UsersBackingBean {
         return create(users, new CreateUserBackingBean(), false, emptyList());
     }
 
+    public static UsersBackingBean create(List<User> users, boolean error, List<ErrorMessage> errorMessages) {
+        return create(users, new CreateUserBackingBean(), error, errorMessages);
+    }
+
     public static UsersBackingBean create(List<User> users, CreateUserBackingBean createUser, boolean error, List<ErrorMessage> errorMessages) {
         return new UsersBackingBean(
                 users.stream()

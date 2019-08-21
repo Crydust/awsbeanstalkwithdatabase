@@ -15,9 +15,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.WebApplicationException;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
+import static java.util.Collections.singletonList;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 
@@ -45,20 +47,59 @@ public class UsersServlet extends HttpServlet {
         }
         final FilteredRequest filteredRequest = new FilteredRequest(button, request.getParameterMap());
         if (button.startsWith("deleteUserRole:")) {
-            final InputAndErrorMessages<DeleteUserRoleBackingBean> inputAndErrorMessages = filteredRequest.read(new DeleteUserRoleBackingBean());
-            LOGGER.info("inputAndErrorMessages = " + inputAndErrorMessages);
-        } else if (button.startsWith("addRoleToUser:")) {
-            final InputAndErrorMessages<AddRoleToUserBackingBean> inputAndErrorMessages = filteredRequest.read(new AddRoleToUserBackingBean());
-            LOGGER.info("inputAndErrorMessages = " + inputAndErrorMessages);
+            try {
+                final InputAndErrorMessages<DeleteUserRoleBackingBean> inputAndErrorMessages = filteredRequest.read(new DeleteUserRoleBackingBean());
+                LOGGER.info("inputAndErrorMessages = " + inputAndErrorMessages);
+                final UserFacade userFacade = new UserFacade();
+                final DeleteUserRoleBackingBean backingBean = inputAndErrorMessages.getInput();
+                final List<ErrorMessage> errorMessages = inputAndErrorMessages.getErrorMessages();
+                final boolean valid = errorMessages.isEmpty();
+                if (valid && userFacade.deleteUserRole(backingBean.getName(), backingBean.getRole())) {
+                    final List<User> users = userFacade.findAll();
+                    final UsersBackingBean model = UsersBackingBean.create(users, false, singletonList(new ErrorMessage(null, "Successfully removed role from user.")));
+                    writeResponse(request, response, model);
+                    return;
+                } else {
+                    final List<User> users = userFacade.findAll();
+                    final UsersBackingBean model = UsersBackingBean.create(users, true, errorMessages);
+                    writeResponse(request, response, model);
+                    return;
+                }
+            } catch (WebApplicationException e) {
+                response.setStatus(e.getResponse().getStatus());
+                response.getWriter().write(e.getMessage());
+            }
+        } else if (button.startsWith("addRoleToUser:") || button.startsWith("addRoleToUser[")) {
+            try {
+                final InputAndErrorMessages<AddRoleToUserBackingBean> inputAndErrorMessages = filteredRequest.read(new AddRoleToUserBackingBean());
+                LOGGER.info("inputAndErrorMessages = " + inputAndErrorMessages);
+                final UserFacade userFacade = new UserFacade();
+                final AddRoleToUserBackingBean backingBean = inputAndErrorMessages.getInput();
+                final List<ErrorMessage> errorMessages = inputAndErrorMessages.getErrorMessages();
+                final boolean valid = errorMessages.isEmpty();
+                if (valid && userFacade.addRoleToUser(backingBean.getName(), backingBean.getRole())) {
+                    final List<User> users = userFacade.findAll();
+                    final UsersBackingBean model = UsersBackingBean.create(users, false, singletonList(new ErrorMessage(null, "Successfully added role to user.")));
+                    writeResponse(request, response, model);
+                    return;
+                } else {
+                    final List<User> users = userFacade.findAll();
+                    final UsersBackingBean model = UsersBackingBean.create(users, true, errorMessages);
+                    writeResponse(request, response, model);
+                    return;
+                }
+            } catch (WebApplicationException e) {
+                response.setStatus(e.getResponse().getStatus());
+                response.getWriter().write(e.getMessage());
+            }
         } else if (button.startsWith("removeUser:")) {
             final InputAndErrorMessages<RemoveUserBackingBean> inputAndErrorMessages = filteredRequest.read(new RemoveUserBackingBean());
             LOGGER.info("inputAndErrorMessages = " + inputAndErrorMessages);
         } else if (button.startsWith("createUser:")) {
-            final InputAndErrorMessages<CreateUserBackingBean> inputAndErrorMessages = filteredRequest.read(new CreateUserBackingBean());
-            LOGGER.info("inputAndErrorMessages = " + inputAndErrorMessages);
             try {
+                final InputAndErrorMessages<CreateUserBackingBean> inputAndErrorMessages = filteredRequest.read(new CreateUserBackingBean());
+                LOGGER.info("inputAndErrorMessages = " + inputAndErrorMessages);
                 final UserFacade userFacade = new UserFacade();
-                final List<User> users = userFacade.findAll();
                 final CreateUserBackingBean backingBean = inputAndErrorMessages.getInput();
                 final List<ErrorMessage> errorMessages = inputAndErrorMessages.getErrorMessages();
                 final boolean valid = errorMessages.isEmpty();
@@ -66,6 +107,7 @@ public class UsersServlet extends HttpServlet {
                     final User user = userFacade.create(backingBean.getName(), backingBean.getPassword(), backingBean.getRole());
                     System.out.println("user = " + user);
                 } else {
+                    final List<User> users = userFacade.findAll();
                     final UsersBackingBean model = UsersBackingBean.create(
                             users,
                             backingBean,
@@ -78,7 +120,6 @@ public class UsersServlet extends HttpServlet {
                 response.setStatus(e.getResponse().getStatus());
                 response.getWriter().write(e.getMessage());
             }
-
         } else {
             response.setStatus(SC_NOT_FOUND);
             return;
@@ -86,7 +127,6 @@ public class UsersServlet extends HttpServlet {
 
         final String url = response.encodeRedirectURL("/UsersServlet");
         response.sendRedirect(url);
-
     }
 
     @Override
