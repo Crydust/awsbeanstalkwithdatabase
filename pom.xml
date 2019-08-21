@@ -284,6 +284,31 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>io.leonard.maven.plugins</groupId>
+                <artifactId>jspc-maven-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>jspc</id>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                        <phase>prepare-package</phase>
+                        <configuration>
+                            <keepSources>true</keepSources>
+                            <trimSpaces>true</trimSpaces>
+                        </configuration>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.tomcat</groupId>
+                        <artifactId>tomcat-jasper</artifactId>
+                        <version>${tomcat.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
         </plugins>
     </build>
 </project>
