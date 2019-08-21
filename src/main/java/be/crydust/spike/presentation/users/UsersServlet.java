@@ -1,5 +1,6 @@
 package be.crydust.spike.presentation.users;
 
+import be.crydust.spike.business.users.WebApplicationException;
 import be.crydust.spike.business.users.boundary.UserFacade;
 import be.crydust.spike.business.users.entity.User;
 import be.crydust.spike.presentation.ErrorMessage;
@@ -13,9 +14,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.WebApplicationException;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -66,7 +65,7 @@ public class UsersServlet extends HttpServlet {
                     return;
                 }
             } catch (WebApplicationException e) {
-                response.setStatus(e.getResponse().getStatus());
+                response.setStatus(500);
                 response.getWriter().write(e.getMessage());
             }
         } else if (button.startsWith("addRoleToUser:") || button.startsWith("addRoleToUser[")) {
@@ -89,7 +88,7 @@ public class UsersServlet extends HttpServlet {
                     return;
                 }
             } catch (WebApplicationException e) {
-                response.setStatus(e.getResponse().getStatus());
+                response.setStatus(500);
                 response.getWriter().write(e.getMessage());
             }
         } else if (button.startsWith("removeUser:")) {
@@ -117,7 +116,7 @@ public class UsersServlet extends HttpServlet {
                     return;
                 }
             } catch (WebApplicationException e) {
-                response.setStatus(e.getResponse().getStatus());
+                response.setStatus(500);
                 response.getWriter().write(e.getMessage());
             }
         } else {
@@ -135,7 +134,7 @@ public class UsersServlet extends HttpServlet {
             final List<User> users = new UserFacade().findAll();
             writeResponse(request, response, UsersBackingBean.create(users));
         } catch (WebApplicationException e) {
-            response.setStatus(e.getResponse().getStatus());
+            response.setStatus(500);
             response.getWriter().write(e.getMessage());
         }
     }

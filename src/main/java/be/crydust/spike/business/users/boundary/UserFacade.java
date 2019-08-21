@@ -1,10 +1,10 @@
 package be.crydust.spike.business.users.boundary;
 
 import be.crydust.spike.business.Repository;
+import be.crydust.spike.business.users.WebApplicationException;
 import be.crydust.spike.business.users.control.UserRepository;
 import be.crydust.spike.business.users.entity.User;
 
-import javax.ws.rs.WebApplicationException;
 import java.util.List;
 import java.util.logging.Logger;
 

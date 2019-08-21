@@ -5,21 +5,14 @@ import org.apache.commons.beanutils.ConvertUtilsBean;
 import org.apache.commons.beanutils.PropertyUtilsBean;
 import org.apache.commons.beanutils.SuppressPropertiesBeanIntrospector;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Path;
-import javax.validation.Validation;
-import javax.validation.ValidationException;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Pattern;
 
+import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static java.util.stream.Collectors.toMap;
 
@@ -153,28 +146,16 @@ public class FilteredRequest {
             beanUtilsBean.getPropertyUtils().addBeanIntrospector(SuppressPropertiesBeanIntrospector.SUPPRESS_CLASS);
             beanUtilsBean.populate(input, combinedParameterMap);
 
-            final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-            final Validator validator = factory.getValidator();
-            Set<ConstraintViolation<T>> violations = validator.validate(input);
-            return new InputAndErrorMessages<T>(input, violationsToErrorMessages(getPrefix(), violations));
-        } catch (IllegalAccessException | InvocationTargetException | ValidationException | IllegalArgumentException e) {
+            final List<ErrorMessage> messages;
+            if (input instanceof Validateable) {
+                messages = ((Validateable) input).validate(getPrefix());
+            } else {
+                messages = emptyList();
+            }
+            return new InputAndErrorMessages<T>(input, messages);
+        } catch (IllegalAccessException | InvocationTargetException | IllegalArgumentException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private static <T> List<ErrorMessage> violationsToErrorMessages(String prefix, Set<ConstraintViolation<T>> violations) {
-        final List<ErrorMessage> violationPaths = new ArrayList<>(violations.size());
-        for (ConstraintViolation<T> violation : violations) {
-            final Iterator<Path.Node> iterator = violation.getPropertyPath().iterator();
-            final StringBuilder sb = new StringBuilder(prefix);
-            while (iterator.hasNext()) {
-                sb.append(iterator.next().getName());
-                if (iterator.hasNext()) {
-                    sb.append(".");
-                }
-            }
-            violationPaths.add(new ErrorMessage(sb.toString(), violation.getMessage()));
-        }
-        return violationPaths;
-    }
 }

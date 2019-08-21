@@ -17,6 +17,13 @@ public class ErrorMessage {
         return message;
     }
 
+    public ErrorMessage withPrefix(String prefix) {
+        if (prefix == null || prefix.isEmpty()) {
+            return this;
+        }
+        return new ErrorMessage(prefix + getFieldId(), getMessage());
+    }
+
     @Override
     public String toString() {
         return "ErrorMessage{" +

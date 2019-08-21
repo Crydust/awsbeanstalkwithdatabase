@@ -1,11 +1,11 @@
 package be.crydust.spike.business.users.control;
 
 import be.crydust.spike.business.Repository;
+import be.crydust.spike.business.users.WebApplicationException;
 import be.crydust.spike.business.users.entity.User;
 import org.apache.catalina.realm.SecretKeyCredentialHandler;
 
 import javax.sql.DataSource;
-import javax.ws.rs.WebApplicationException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 import java.util.HashSet;

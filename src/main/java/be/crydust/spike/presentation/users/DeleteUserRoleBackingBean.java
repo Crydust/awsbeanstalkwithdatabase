@@ -1,17 +1,18 @@
 package be.crydust.spike.presentation.users;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
+import be.crydust.spike.presentation.ErrorMessage;
+import be.crydust.spike.presentation.Validateable;
 
-public class DeleteUserRoleBackingBean {
-    @NotBlank
-    @Size(min = 1, max = 64)
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.util.Collections.unmodifiableList;
+
+public class DeleteUserRoleBackingBean implements Validateable {
     private String name;
-    @NotBlank
-    @Size(min = 1, max = 64)
     private String role;
 
-    public DeleteUserRoleBackingBean(@NotBlank @Size(min = 1, max = 64) String name, @NotBlank @Size(min = 1, max = 64) String role) {
+    public DeleteUserRoleBackingBean(String name, String role) {
         this.name = name;
         this.role = role;
     }
@@ -34,6 +35,22 @@ public class DeleteUserRoleBackingBean {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    @Override
+    public List<ErrorMessage> validate() {
+        final List<ErrorMessage> errorMessages = new ArrayList<>();
+        if (name == null || name.isEmpty()) {
+            errorMessages.add(new ErrorMessage("name", "Cannot be blank"));
+        } else if (name.length() < 1 || name.length() > 64) {
+            errorMessages.add(new ErrorMessage("name", String.format("Length must be between %d and %d", 1, 64)));
+        }
+        if (role == null || role.isEmpty()) {
+            errorMessages.add(new ErrorMessage("role", "Cannot be blank"));
+        } else if (role.length() < 1 || role.length() > 64) {
+            errorMessages.add(new ErrorMessage("role", String.format("Length must be between %d and %d", 1, 64)));
+        }
+        return unmodifiableList(errorMessages);
     }
 
     @Override
