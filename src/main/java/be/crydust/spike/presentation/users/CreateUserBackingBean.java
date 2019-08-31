@@ -48,9 +48,8 @@ public class CreateUserBackingBean implements Validateable {
         if (password == null || password.isEmpty()) {
             errorMessages.add(new ErrorMessage("password", "Cannot be blank"));
         }
-        if (role == null || role.isEmpty()) {
-            errorMessages.add(new ErrorMessage("role", "Cannot be blank"));
-        } else if (role.length() < 1 || role.length() > 64) {
+        // role is optional
+        if (role != null && !role.isEmpty() && (role.length() < 1 || role.length() > 64)) {
             errorMessages.add(new ErrorMessage("role", String.format("Length must be between %d and %d", 1, 64)));
         }
         return unmodifiableList(errorMessages);
