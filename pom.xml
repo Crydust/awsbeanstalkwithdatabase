@@ -131,11 +131,6 @@
             <version>${commons-collections.version}</version>
             <scope>runtime</scope>
         </dependency>
-        <!--        <dependency>-->
-        <!--            <groupId>commons-dbutils</groupId>-->
-        <!--            <artifactId>commons-dbutils</artifactId>-->
-        <!--            <version>${commons-dbutils.version}</version>-->
-        <!--        </dependency>-->
         <!-- tests -->
         <dependency>
             <groupId>junit</groupId>
@@ -153,19 +148,6 @@
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-library</artifactId>
             <version>${hamcrest.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <!-- required parts of tomcat for hibernate validator -->
-        <dependency>
-            <groupId>org.apache.tomcat</groupId>
-            <artifactId>tomcat-el-api</artifactId>
-            <version>${tomcat.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.tomcat</groupId>
-            <artifactId>tomcat-jasper-el</artifactId>
-            <version>${tomcat.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
