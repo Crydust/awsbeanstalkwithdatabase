@@ -37,8 +37,8 @@ public class UserFacade {
                 .addRoleToUser(name, role);
     }
 
-    public void deleteUser(String name) {
-        new UserRepository(Repository.lookupDataSource())
+    public boolean deleteUser(String name) {
+        return new UserRepository(Repository.lookupDataSource())
                 .deleteUser(name);
     }
 }

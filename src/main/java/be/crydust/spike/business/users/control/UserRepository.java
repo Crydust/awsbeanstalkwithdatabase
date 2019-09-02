@@ -1,14 +1,12 @@
 package be.crydust.spike.business.users.control;
 
 import be.crydust.spike.business.Repository;
-import be.crydust.spike.business.Transaction;
 import be.crydust.spike.business.users.WebApplicationException;
 import be.crydust.spike.business.users.entity.User;
 import org.apache.catalina.realm.SecretKeyCredentialHandler;
 
 import javax.sql.DataSource;
 import java.security.NoSuchAlgorithmException;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -90,6 +88,9 @@ public class UserRepository {
             ps.setString(1, name);
             ps.setString(2, encodeWithTomcat(password));
         });
+        if (role == null || role.isEmpty()) {
+            return new User(name, emptySet());
+        }
         //language=PostgreSQL
         String sql2 = "insert into user_roles (user_name, role_name)\n" +
                 "values (?, ?)";
@@ -97,7 +98,7 @@ public class UserRepository {
             ps.setString(1, name);
             ps.setString(2, role);
         });
-        return new User(name, Collections.singleton(role));
+        return new User(name, singleton(role));
     }
 
     public boolean deleteUserRole(String name, String role) {
@@ -120,21 +121,19 @@ public class UserRepository {
         }) == 1;
     }
 
-    public void deleteUser(String name) {
-        new Transaction(ds, (ds) -> {
-            //language=PostgreSQL
-            String sql1 = "delete from user_roles\n" +
-                    "where user_name = ?";
-            Repository.executeUpdate(ds, sql1, (ps) -> {
-                ps.setString(1, name);
-            });
-            //language=PostgreSQL
-            String sql2 = "delete from users\n" +
-                    "where user_name = ?";
-            Repository.executeUpdate(ds, sql2, (ps) -> {
-                ps.setString(1, name);
-            });
-        }).run();
+    public boolean deleteUser(String name) {
+        //language=PostgreSQL
+        String sql1 = "delete from user_roles\n" +
+                "where user_name = ?";
+        Repository.executeUpdate(ds, sql1, (ps) -> {
+            ps.setString(1, name);
+        });
+        //language=PostgreSQL
+        String sql2 = "delete from users\n" +
+                "where user_name = ?";
+        return Repository.executeUpdate(ds, sql2, (ps) -> {
+            ps.setString(1, name);
+        }) == 1;
     }
 
 }

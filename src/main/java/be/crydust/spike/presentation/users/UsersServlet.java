@@ -99,8 +99,7 @@ public class UsersServlet extends HttpServlet {
                 final RemoveUserBackingBean backingBean = inputAndErrorMessages.getInput();
                 final List<ErrorMessage> errorMessages = inputAndErrorMessages.getErrorMessages();
                 final boolean valid = errorMessages.isEmpty();
-                if (valid) {
-                    userFacade.deleteUser(backingBean.getName());
+                if (valid && userFacade.deleteUser(backingBean.getName())) {
                     final List<User> users = userFacade.findAll();
                     final UsersBackingBean model = UsersBackingBean.create(users, false, singletonList(new ErrorMessage(null, "Successfully deleted user.")));
                     writeResponse(request, response, model);
@@ -125,7 +124,6 @@ public class UsersServlet extends HttpServlet {
                 final boolean valid = errorMessages.isEmpty();
                 if (valid) {
                     final User user = userFacade.create(backingBean.getName(), backingBean.getPassword(), backingBean.getRole());
-                    System.out.println("user = " + user);
                 } else {
                     final List<User> users = userFacade.findAll();
                     final UsersBackingBean model = UsersBackingBean.create(
