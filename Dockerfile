@@ -1,4 +1,4 @@
-FROM tomcat:9.0.8-jre10-slim
+FROM tomcat:8.5.45-jdk8-corretto
 
 RUN set -ex; \
     rm -rf ${CATALINA_HOME}/webapps/*; \
