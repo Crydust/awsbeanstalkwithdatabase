@@ -1,6 +1,7 @@
 package be.crydust.spike.business.users.control;
 
 import be.crydust.spike.business.Repository;
+import be.crydust.spike.business.Transaction;
 import be.crydust.spike.business.users.WebApplicationException;
 import be.crydust.spike.business.users.entity.User;
 import org.apache.catalina.realm.SecretKeyCredentialHandler;
@@ -25,6 +26,19 @@ public class UserRepository {
 
     public UserRepository(DataSource ds) {
         this.ds = ds;
+    }
+
+    private static String encodeWithTomcat(String credentials) {
+        try {
+            SecretKeyCredentialHandler h = new SecretKeyCredentialHandler();
+            h.setAlgorithm("PBKDF2WithHmacSHA256");
+            h.setIterations(185000);
+            h.setSaltLength(8);
+            h.setKeyLength(256);
+            return h.mutate(credentials);
+        } catch (NoSuchAlgorithmException e) {
+            throw new WebApplicationException("failed to encrypt password", e);
+        }
     }
 
     public List<User> findAll() {
@@ -106,17 +120,21 @@ public class UserRepository {
         }) == 1;
     }
 
-    private static String encodeWithTomcat(String credentials) {
-        try {
-            SecretKeyCredentialHandler h = new SecretKeyCredentialHandler();
-            h.setAlgorithm("PBKDF2WithHmacSHA256");
-            h.setIterations(185000);
-            h.setSaltLength(8);
-            h.setKeyLength(256);
-            return h.mutate(credentials);
-        } catch (NoSuchAlgorithmException e) {
-            throw new WebApplicationException("failed to encrypt password", e);
-        }
+    public void deleteUser(String name) {
+        new Transaction(ds, (ds) -> {
+            //language=PostgreSQL
+            String sql1 = "delete from user_roles\n" +
+                    "where user_name = ?";
+            Repository.executeUpdate(ds, sql1, (ps) -> {
+                ps.setString(1, name);
+            });
+            //language=PostgreSQL
+            String sql2 = "delete from users\n" +
+                    "where user_name = ?";
+            Repository.executeUpdate(ds, sql2, (ps) -> {
+                ps.setString(1, name);
+            });
+        }).run();
     }
 
 }

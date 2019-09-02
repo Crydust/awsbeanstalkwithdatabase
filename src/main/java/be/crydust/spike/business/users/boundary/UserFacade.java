@@ -1,6 +1,7 @@
 package be.crydust.spike.business.users.boundary;
 
 import be.crydust.spike.business.Repository;
+import be.crydust.spike.business.RepositoryException;
 import be.crydust.spike.business.users.WebApplicationException;
 import be.crydust.spike.business.users.control.UserRepository;
 import be.crydust.spike.business.users.entity.User;
@@ -16,7 +17,7 @@ public class UserFacade {
         try {
             return new UserRepository(Repository.lookupDataSource())
                     .findAll();
-        } catch (Repository.RepositoryException e) {
+        } catch (RepositoryException e) {
             throw new WebApplicationException("Could not load users.", e);
         }
     }
@@ -34,5 +35,10 @@ public class UserFacade {
     public boolean addRoleToUser(String name, String role) {
         return new UserRepository(Repository.lookupDataSource())
                 .addRoleToUser(name, role);
+    }
+
+    public void deleteUser(String name) {
+        new UserRepository(Repository.lookupDataSource())
+                .deleteUser(name);
     }
 }

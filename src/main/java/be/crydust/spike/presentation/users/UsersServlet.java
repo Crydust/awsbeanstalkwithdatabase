@@ -92,8 +92,29 @@ public class UsersServlet extends HttpServlet {
                 response.getWriter().write(e.getMessage());
             }
         } else if (button.startsWith("removeUser:")) {
-            final InputAndErrorMessages<RemoveUserBackingBean> inputAndErrorMessages = filteredRequest.read(new RemoveUserBackingBean());
-            LOGGER.info("inputAndErrorMessages = " + inputAndErrorMessages);
+            try {
+                final InputAndErrorMessages<RemoveUserBackingBean> inputAndErrorMessages = filteredRequest.read(new RemoveUserBackingBean());
+                LOGGER.info("inputAndErrorMessages = " + inputAndErrorMessages);
+                final UserFacade userFacade = new UserFacade();
+                final RemoveUserBackingBean backingBean = inputAndErrorMessages.getInput();
+                final List<ErrorMessage> errorMessages = inputAndErrorMessages.getErrorMessages();
+                final boolean valid = errorMessages.isEmpty();
+                if (valid) {
+                    userFacade.deleteUser(backingBean.getName());
+                    final List<User> users = userFacade.findAll();
+                    final UsersBackingBean model = UsersBackingBean.create(users, false, singletonList(new ErrorMessage(null, "Successfully deleted user.")));
+                    writeResponse(request, response, model);
+                    return;
+                } else {
+                    final List<User> users = userFacade.findAll();
+                    final UsersBackingBean model = UsersBackingBean.create(users, true, errorMessages);
+                    writeResponse(request, response, model);
+                    return;
+                }
+            } catch (WebApplicationException e) {
+                response.setStatus(500);
+                response.getWriter().write(e.getMessage());
+            }
         } else if (button.startsWith("createUser:")) {
             try {
                 final InputAndErrorMessages<CreateUserBackingBean> inputAndErrorMessages = filteredRequest.read(new CreateUserBackingBean());
