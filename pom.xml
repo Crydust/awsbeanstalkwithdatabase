@@ -31,8 +31,8 @@
         <flyway-core.version>5.2.1</flyway-core.version>
         <junit.version>5.5.1</junit.version>
         <hamcrest.version>2.1</hamcrest.version>
-        <commons-beanutils.version>1.9.3</commons-beanutils.version>
-        <commons-collections.version>3.1</commons-collections.version>
+        <commons-beanutils.version>1.9.4</commons-beanutils.version>
+        <commons-collections.version>3.2.2</commons-collections.version>
         <h2.version>1.4.199</h2.version>
         <datasource-assert.version>1.0</datasource-assert.version>
     </properties>
@@ -132,10 +132,10 @@
             <version>${commons-beanutils.version}</version>
             <exclusions>
                 <!--supposed to be an optional dependency, but it isn't really optional-->
-                <!--<exclusion>-->
-                    <!--<groupId>commons-collections</groupId>-->
-                    <!--<artifactId>commons-collections</artifactId>-->
-                <!--</exclusion>-->
+                <exclusion>
+                    <groupId>commons-collections</groupId>
+                    <artifactId>commons-collections</artifactId>
+                </exclusion>
                 <exclusion>
                     <groupId>commons-logging</groupId>
                     <artifactId>commons-logging</artifactId>
@@ -154,6 +154,7 @@
             <groupId>commons-collections</groupId>
             <artifactId>commons-collections</artifactId>
             <version>${commons-collections.version}</version>
+            <classifier>forCommonsBeanutils</classifier>
             <scope>runtime</scope>
         </dependency>
         <!-- tests -->
