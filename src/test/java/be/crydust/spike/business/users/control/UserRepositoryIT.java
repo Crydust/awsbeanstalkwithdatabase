@@ -3,12 +3,10 @@ package be.crydust.spike.business.users.control;
 import be.crydust.spike.boilerplate.SingleConnectionDataSourceResource;
 import be.crydust.spike.business.users.entity.User;
 import net.ttddyy.dsproxy.asserts.ProxyTestDataSource;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-
-import java.util.UUID;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -16,18 +14,19 @@ import static org.hamcrest.Matchers.hasSize;
 
 public class UserRepositoryIT {
 
-    @Rule
-    public SingleConnectionDataSourceResource dataSourceResource = new SingleConnectionDataSourceResource("jdbc:h2:mem:test-" + UUID.randomUUID().toString(), "sa", "");
+    @RegisterExtension
+    SingleConnectionDataSourceResource dataSourceResource = new SingleConnectionDataSourceResource();
+
     private ProxyTestDataSource ds;
     private UserRepository repository;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         ds = dataSourceResource.get();
         repository = new UserRepository(ds);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         dataSourceResource.logSqlStatements();
     }
