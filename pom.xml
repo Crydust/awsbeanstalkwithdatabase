@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>be.crydust.spike</groupId>
     <artifactId>awsbeanstalkwithdatabase</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>${datasource-assert.version}-SNAPSHOT</version>
     <packaging>war</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -33,13 +33,38 @@
         <hamcrest.version>1.3</hamcrest.version>
         <commons-beanutils.version>1.9.3</commons-beanutils.version>
         <commons-collections.version>3.1</commons-collections.version>
-        <!--        <commons-dbutils.version>1.7</commons-dbutils.version>-->
+        <h2.version>1.4.199</h2.version>
+        <datasource-assert.version>1.0</datasource-assert.version>
     </properties>
     <dependencies>
         <!-- contains filter classes -->
         <dependency>
             <groupId>org.apache.tomcat</groupId>
             <artifactId>tomcat-catalina</artifactId>
+            <version>${tomcat.version}</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-util</artifactId>
+            <version>${tomcat.version}</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-juli</artifactId>
             <version>${tomcat.version}</version>
             <scope>provided</scope>
             <exclusions>
@@ -148,6 +173,20 @@
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-library</artifactId>
             <version>${hamcrest.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- in-memory database for testing -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>${h2.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- datasource wrapper to verify sql statements for testing -->
+        <dependency>
+            <groupId>net.ttddyy</groupId>
+            <artifactId>datasource-assert</artifactId>
+            <version>${datasource-assert.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

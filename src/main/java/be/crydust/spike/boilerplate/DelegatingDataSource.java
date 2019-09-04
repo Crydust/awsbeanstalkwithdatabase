@@ -1,4 +1,4 @@
-package be.crydust.spike.business;
+package be.crydust.spike.boilerplate;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;

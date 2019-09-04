@@ -1,4 +1,6 @@
-package be.crydust.spike.business;
+package be.crydust.spike.boilerplate;
+
+import be.crydust.spike.business.RepositoryException;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
