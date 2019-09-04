@@ -11,6 +11,8 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class UserRepositoryIT {
 
@@ -56,7 +58,10 @@ public class UserRepositoryIT {
 
         final User user = repository.findByName("a").get();
 
-        assertThat(user.getRoles(), containsInAnyOrder("r1", "r2"));
+        assertAll(
+                () -> assertThat(user.getName(), is("a")),
+                () -> assertThat(user.getRoles(), containsInAnyOrder("r1", "r2"))
+        );
     }
 
     @Test
