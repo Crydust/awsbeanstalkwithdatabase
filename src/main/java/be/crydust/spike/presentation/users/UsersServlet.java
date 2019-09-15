@@ -40,6 +40,111 @@ public class UsersServlet extends HttpServlet {
         request.getRequestDispatcher("/WEB-INF/jsp/users.jsp").forward(request, response);
     }
 
+    private static boolean deleteUserRole(HttpServletRequest request, HttpServletResponse response, FilteredRequest filteredRequest, DataSource ds) throws IOException, ServletException {
+        try {
+            final InputAndErrorMessages<DeleteUserRoleBackingBean> inputAndErrorMessages = filteredRequest.read(new DeleteUserRoleBackingBean());
+            LOGGER.info("inputAndErrorMessages = " + inputAndErrorMessages);
+            final UserFacade userFacade = new UserFacade(ds);
+            final DeleteUserRoleBackingBean backingBean = inputAndErrorMessages.getInput();
+            final List<ErrorMessage> errorMessages = inputAndErrorMessages.getErrorMessages();
+            final boolean valid = errorMessages.isEmpty();
+            if (valid && userFacade.deleteUserRole(backingBean.getName(), backingBean.getRole())) {
+                final List<User> users = userFacade.findAll();
+                final UsersBackingBean model = UsersBackingBean.create(users, false, singletonList(new ErrorMessage(null, "Successfully removed role from user.")));
+                writeResponse(request, response, model);
+                return true;
+            } else {
+                final List<User> users = userFacade.findAll();
+                final UsersBackingBean model = UsersBackingBean.create(users, true, errorMessages);
+                writeResponse(request, response, model);
+                return true;
+            }
+        } catch (WebApplicationException e) {
+            response.setStatus(500);
+            response.getWriter().write(e.getMessage());
+        }
+        return false;
+    }
+
+    private static boolean addRoleToUser(HttpServletRequest request, HttpServletResponse response, FilteredRequest filteredRequest, DataSource ds) throws IOException, ServletException {
+        try {
+            final InputAndErrorMessages<AddRoleToUserBackingBean> inputAndErrorMessages = filteredRequest.read(new AddRoleToUserBackingBean());
+            LOGGER.info("inputAndErrorMessages = " + inputAndErrorMessages);
+            final UserFacade userFacade = new UserFacade(ds);
+            final AddRoleToUserBackingBean backingBean = inputAndErrorMessages.getInput();
+            final List<ErrorMessage> errorMessages = inputAndErrorMessages.getErrorMessages();
+            final boolean valid = errorMessages.isEmpty();
+            if (valid && userFacade.addRoleToUser(backingBean.getName(), backingBean.getRole())) {
+                final List<User> users = userFacade.findAll();
+                final UsersBackingBean model = UsersBackingBean.create(users, false, singletonList(new ErrorMessage(null, "Successfully added role to user.")));
+                writeResponse(request, response, model);
+                return true;
+            } else {
+                final List<User> users = userFacade.findAll();
+                final UsersBackingBean model = UsersBackingBean.create(users, true, errorMessages);
+                writeResponse(request, response, model);
+                return true;
+            }
+        } catch (WebApplicationException e) {
+            response.setStatus(500);
+            response.getWriter().write(e.getMessage());
+        }
+        return false;
+    }
+
+    private static boolean removeUser(HttpServletRequest request, HttpServletResponse response, FilteredRequest filteredRequest, DataSource ds) throws IOException, ServletException {
+        try {
+            final InputAndErrorMessages<RemoveUserBackingBean> inputAndErrorMessages = filteredRequest.read(new RemoveUserBackingBean());
+            LOGGER.info("inputAndErrorMessages = " + inputAndErrorMessages);
+            final UserFacade userFacade = new UserFacade(ds);
+            final RemoveUserBackingBean backingBean = inputAndErrorMessages.getInput();
+            final List<ErrorMessage> errorMessages = inputAndErrorMessages.getErrorMessages();
+            final boolean valid = errorMessages.isEmpty();
+            if (valid && userFacade.deleteUser(backingBean.getName())) {
+                final List<User> users = userFacade.findAll();
+                final UsersBackingBean model = UsersBackingBean.create(users, false, singletonList(new ErrorMessage(null, "Successfully deleted user.")));
+                writeResponse(request, response, model);
+                return true;
+            } else {
+                final List<User> users = userFacade.findAll();
+                final UsersBackingBean model = UsersBackingBean.create(users, true, errorMessages);
+                writeResponse(request, response, model);
+                return true;
+            }
+        } catch (WebApplicationException e) {
+            response.setStatus(500);
+            response.getWriter().write(e.getMessage());
+        }
+        return false;
+    }
+
+    private static boolean createUser(HttpServletRequest request, HttpServletResponse response, FilteredRequest filteredRequest, DataSource ds) throws IOException, ServletException {
+        try {
+            final InputAndErrorMessages<CreateUserBackingBean> inputAndErrorMessages = filteredRequest.read(new CreateUserBackingBean());
+            LOGGER.info("inputAndErrorMessages = " + inputAndErrorMessages);
+            final UserFacade userFacade = new UserFacade(ds);
+            final CreateUserBackingBean backingBean = inputAndErrorMessages.getInput();
+            final List<ErrorMessage> errorMessages = inputAndErrorMessages.getErrorMessages();
+            final boolean valid = errorMessages.isEmpty();
+            if (valid) {
+                final User user = userFacade.create(backingBean.getName(), backingBean.getPassword(), backingBean.getRole());
+            } else {
+                final List<User> users = userFacade.findAll();
+                final UsersBackingBean model = UsersBackingBean.create(
+                        users,
+                        backingBean,
+                        true,
+                        errorMessages);
+                writeResponse(request, response, model);
+                return true;
+            }
+        } catch (WebApplicationException e) {
+            response.setStatus(500);
+            response.getWriter().write(e.getMessage());
+        }
+        return false;
+    }
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         LOGGER.info("UsersServlet.doPost");
@@ -51,98 +156,13 @@ public class UsersServlet extends HttpServlet {
         }
         final FilteredRequest filteredRequest = new FilteredRequest(button, request.getParameterMap());
         if (button.startsWith("deleteUserRole:")) {
-            try {
-                final InputAndErrorMessages<DeleteUserRoleBackingBean> inputAndErrorMessages = filteredRequest.read(new DeleteUserRoleBackingBean());
-                LOGGER.info("inputAndErrorMessages = " + inputAndErrorMessages);
-                final UserFacade userFacade = new UserFacade(ds);
-                final DeleteUserRoleBackingBean backingBean = inputAndErrorMessages.getInput();
-                final List<ErrorMessage> errorMessages = inputAndErrorMessages.getErrorMessages();
-                final boolean valid = errorMessages.isEmpty();
-                if (valid && userFacade.deleteUserRole(backingBean.getName(), backingBean.getRole())) {
-                    final List<User> users = userFacade.findAll();
-                    final UsersBackingBean model = UsersBackingBean.create(users, false, singletonList(new ErrorMessage(null, "Successfully removed role from user.")));
-                    writeResponse(request, response, model);
-                    return;
-                } else {
-                    final List<User> users = userFacade.findAll();
-                    final UsersBackingBean model = UsersBackingBean.create(users, true, errorMessages);
-                    writeResponse(request, response, model);
-                    return;
-                }
-            } catch (WebApplicationException e) {
-                response.setStatus(500);
-                response.getWriter().write(e.getMessage());
-            }
+            if (deleteUserRole(request, response, filteredRequest, ds)) return;
         } else if (button.startsWith("addRoleToUser:") || button.startsWith("addRoleToUser[")) {
-            try {
-                final InputAndErrorMessages<AddRoleToUserBackingBean> inputAndErrorMessages = filteredRequest.read(new AddRoleToUserBackingBean());
-                LOGGER.info("inputAndErrorMessages = " + inputAndErrorMessages);
-                final UserFacade userFacade = new UserFacade(ds);
-                final AddRoleToUserBackingBean backingBean = inputAndErrorMessages.getInput();
-                final List<ErrorMessage> errorMessages = inputAndErrorMessages.getErrorMessages();
-                final boolean valid = errorMessages.isEmpty();
-                if (valid && userFacade.addRoleToUser(backingBean.getName(), backingBean.getRole())) {
-                    final List<User> users = userFacade.findAll();
-                    final UsersBackingBean model = UsersBackingBean.create(users, false, singletonList(new ErrorMessage(null, "Successfully added role to user.")));
-                    writeResponse(request, response, model);
-                    return;
-                } else {
-                    final List<User> users = userFacade.findAll();
-                    final UsersBackingBean model = UsersBackingBean.create(users, true, errorMessages);
-                    writeResponse(request, response, model);
-                    return;
-                }
-            } catch (WebApplicationException e) {
-                response.setStatus(500);
-                response.getWriter().write(e.getMessage());
-            }
+            if (addRoleToUser(request, response, filteredRequest, ds)) return;
         } else if (button.startsWith("removeUser:")) {
-            try {
-                final InputAndErrorMessages<RemoveUserBackingBean> inputAndErrorMessages = filteredRequest.read(new RemoveUserBackingBean());
-                LOGGER.info("inputAndErrorMessages = " + inputAndErrorMessages);
-                final UserFacade userFacade = new UserFacade(ds);
-                final RemoveUserBackingBean backingBean = inputAndErrorMessages.getInput();
-                final List<ErrorMessage> errorMessages = inputAndErrorMessages.getErrorMessages();
-                final boolean valid = errorMessages.isEmpty();
-                if (valid && userFacade.deleteUser(backingBean.getName())) {
-                    final List<User> users = userFacade.findAll();
-                    final UsersBackingBean model = UsersBackingBean.create(users, false, singletonList(new ErrorMessage(null, "Successfully deleted user.")));
-                    writeResponse(request, response, model);
-                    return;
-                } else {
-                    final List<User> users = userFacade.findAll();
-                    final UsersBackingBean model = UsersBackingBean.create(users, true, errorMessages);
-                    writeResponse(request, response, model);
-                    return;
-                }
-            } catch (WebApplicationException e) {
-                response.setStatus(500);
-                response.getWriter().write(e.getMessage());
-            }
+            if (removeUser(request, response, filteredRequest, ds)) return;
         } else if (button.startsWith("createUser:")) {
-            try {
-                final InputAndErrorMessages<CreateUserBackingBean> inputAndErrorMessages = filteredRequest.read(new CreateUserBackingBean());
-                LOGGER.info("inputAndErrorMessages = " + inputAndErrorMessages);
-                final UserFacade userFacade = new UserFacade(ds);
-                final CreateUserBackingBean backingBean = inputAndErrorMessages.getInput();
-                final List<ErrorMessage> errorMessages = inputAndErrorMessages.getErrorMessages();
-                final boolean valid = errorMessages.isEmpty();
-                if (valid) {
-                    final User user = userFacade.create(backingBean.getName(), backingBean.getPassword(), backingBean.getRole());
-                } else {
-                    final List<User> users = userFacade.findAll();
-                    final UsersBackingBean model = UsersBackingBean.create(
-                            users,
-                            backingBean,
-                            true,
-                            errorMessages);
-                    writeResponse(request, response, model);
-                    return;
-                }
-            } catch (WebApplicationException e) {
-                response.setStatus(500);
-                response.getWriter().write(e.getMessage());
-            }
+            if (createUser(request, response, filteredRequest, ds)) return;
         } else {
             response.setStatus(SC_NOT_FOUND);
             return;
