@@ -7,6 +7,7 @@ import be.crydust.spike.presentation.ErrorMessage;
 import be.crydust.spike.presentation.FilteredRequest;
 import be.crydust.spike.presentation.InputAndErrorMessages;
 
+import javax.annotation.Resource;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.HttpConstraint;
 import javax.servlet.annotation.ServletSecurity;
@@ -14,6 +15,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Logger;
@@ -27,6 +29,9 @@ import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 public class UsersServlet extends HttpServlet {
 
     private static final Logger LOGGER = Logger.getLogger(UsersServlet.class.getName());
+
+    @Resource(name = "jdbc/MyDataSource")
+    private DataSource ds;
 
     private static void writeResponse(HttpServletRequest request, HttpServletResponse response, UsersBackingBean model) throws IOException, ServletException {
         response.setContentType("text/html; charset=UTF-8");
@@ -49,7 +54,7 @@ public class UsersServlet extends HttpServlet {
             try {
                 final InputAndErrorMessages<DeleteUserRoleBackingBean> inputAndErrorMessages = filteredRequest.read(new DeleteUserRoleBackingBean());
                 LOGGER.info("inputAndErrorMessages = " + inputAndErrorMessages);
-                final UserFacade userFacade = new UserFacade();
+                final UserFacade userFacade = new UserFacade(ds);
                 final DeleteUserRoleBackingBean backingBean = inputAndErrorMessages.getInput();
                 final List<ErrorMessage> errorMessages = inputAndErrorMessages.getErrorMessages();
                 final boolean valid = errorMessages.isEmpty();
@@ -72,7 +77,7 @@ public class UsersServlet extends HttpServlet {
             try {
                 final InputAndErrorMessages<AddRoleToUserBackingBean> inputAndErrorMessages = filteredRequest.read(new AddRoleToUserBackingBean());
                 LOGGER.info("inputAndErrorMessages = " + inputAndErrorMessages);
-                final UserFacade userFacade = new UserFacade();
+                final UserFacade userFacade = new UserFacade(ds);
                 final AddRoleToUserBackingBean backingBean = inputAndErrorMessages.getInput();
                 final List<ErrorMessage> errorMessages = inputAndErrorMessages.getErrorMessages();
                 final boolean valid = errorMessages.isEmpty();
@@ -95,7 +100,7 @@ public class UsersServlet extends HttpServlet {
             try {
                 final InputAndErrorMessages<RemoveUserBackingBean> inputAndErrorMessages = filteredRequest.read(new RemoveUserBackingBean());
                 LOGGER.info("inputAndErrorMessages = " + inputAndErrorMessages);
-                final UserFacade userFacade = new UserFacade();
+                final UserFacade userFacade = new UserFacade(ds);
                 final RemoveUserBackingBean backingBean = inputAndErrorMessages.getInput();
                 final List<ErrorMessage> errorMessages = inputAndErrorMessages.getErrorMessages();
                 final boolean valid = errorMessages.isEmpty();
@@ -118,7 +123,7 @@ public class UsersServlet extends HttpServlet {
             try {
                 final InputAndErrorMessages<CreateUserBackingBean> inputAndErrorMessages = filteredRequest.read(new CreateUserBackingBean());
                 LOGGER.info("inputAndErrorMessages = " + inputAndErrorMessages);
-                final UserFacade userFacade = new UserFacade();
+                final UserFacade userFacade = new UserFacade(ds);
                 final CreateUserBackingBean backingBean = inputAndErrorMessages.getInput();
                 final List<ErrorMessage> errorMessages = inputAndErrorMessages.getErrorMessages();
                 final boolean valid = errorMessages.isEmpty();
@@ -150,7 +155,7 @@ public class UsersServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
-            final List<User> users = new UserFacade().findAll();
+            final List<User> users = new UserFacade(ds).findAll();
             writeResponse(request, response, UsersBackingBean.create(users));
         } catch (WebApplicationException e) {
             response.setStatus(500);
