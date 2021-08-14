@@ -1,4 +1,4 @@
-FROM tomcat:8.5.45-jdk8-corretto
+FROM tomcat:8.5.63-jdk11-corretto
 
 RUN set -ex; \
     rm -rf ${CATALINA_HOME}/webapps/*; \
