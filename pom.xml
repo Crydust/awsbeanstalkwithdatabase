@@ -17,7 +17,7 @@
         <javax.annotation-api.version>1.2</javax.annotation-api.version>
         <servlet-api.version>3.1.0</servlet-api.version>
         <taglibs-standard.version>1.2.5</taglibs-standard.version>
-        <postgresql.version>42.2.18</postgresql.version>
+        <postgresql.version>42.2.23</postgresql.version>
         <maven-enforcer-plugin.version>1.4.1</maven-enforcer-plugin.version>
         <maven-clean-plugin.version>3.1.0</maven-clean-plugin.version>
         <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
@@ -28,13 +28,13 @@
         <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
         <maven-site-plugin.version>3.8.2</maven-site-plugin.version>
         <versions-maven-plugin.version>2.8.1</versions-maven-plugin.version>
-        <HikariCP.version>3.4.5</HikariCP.version>
-        <slf4j.version>1.7.30</slf4j.version>
-        <flyway-core.version>7.0.4</flyway-core.version>
-        <junit.version>5.7.0</junit.version>
+        <HikariCP.version>5.0.0</HikariCP.version>
+        <slf4j.version>1.7.32</slf4j.version>
+        <flyway-core.version>7.13.0</flyway-core.version>
+        <junit.version>5.7.2</junit.version>
         <hamcrest.version>2.2</hamcrest.version>
         <commons-beanutils.version>1.9.4</commons-beanutils.version>
-        <commons-collections.version>3.2.2</commons-collections.version>
+        <commons-collections.version>4.4</commons-collections.version>
         <h2.version>1.4.200</h2.version>
         <datasource-assert.version>1.0</datasource-assert.version>
     </properties>
@@ -164,8 +164,8 @@
         </dependency>
         <!-- commons-beanutils depends on commons-collections (should be optional, but isn't) -->
         <dependency>
-            <groupId>commons-collections</groupId>
-            <artifactId>commons-collections</artifactId>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
             <version>${commons-collections.version}</version>
             <scope>runtime</scope>
         </dependency>
