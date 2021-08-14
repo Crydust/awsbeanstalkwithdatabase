@@ -15,5 +15,10 @@
                 <ignoreVersion type="regex">.*\.jre[67]</ignoreVersion>
             </ignoreVersions>
         </rule>
+        <rule groupId="commons-collections" artifactId="commons-collections" comparisonMethod="maven">
+            <ignoreVersions>
+                <ignoreVersion type="regex">200[34].*</ignoreVersion>
+            </ignoreVersions>
+        </rule>
     </rules>
 </ruleset>
