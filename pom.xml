@@ -266,6 +266,10 @@
                     </execution>
                 </executions>
             </plugin>
+            <!--
+            Don't upgrade the jspc plugin as it is bound to a tomcat version.
+            https://github.com/leonardehrenfried/jspc-maven-plugin
+            -->
             <plugin>
                 <groupId>io.leonard.maven.plugins</groupId>
                 <artifactId>jspc-maven-plugin</artifactId>
