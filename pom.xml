@@ -9,10 +9,12 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.release>11</maven.compiler.release>
         <failOnMissingWebXml>false</failOnMissingWebXml>
-        <tomcat.version>8.5.45</tomcat.version>
+        <tomcat.version>8.5.63</tomcat.version>
+        <javax.annotation-api.version>1.2</javax.annotation-api.version>
         <servlet-api.version>3.1.0</servlet-api.version>
         <taglibs-standard.version>1.2.5</taglibs-standard.version>
         <postgresql.version>42.2.18</postgresql.version>
@@ -73,6 +75,17 @@
                     <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <!--
+        the Java EE annotations are not available in java 11.
+        Tomcat ships org.apache.tomcat:tomcat-annotations-api.
+        Which is the equivalent of the 1.2 annations.
+        -->
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+            <version>${javax.annotation-api.version}</version>
+            <scope>provided</scope>
         </dependency>
         <!-- servlets -->
         <dependency>
