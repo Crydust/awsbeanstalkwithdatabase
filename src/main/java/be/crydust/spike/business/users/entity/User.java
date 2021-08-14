@@ -1,10 +1,7 @@
 package be.crydust.spike.business.users.entity;
 
-import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-
-import static java.util.Collections.unmodifiableSet;
 
 public class User {
     private final String name;
@@ -12,7 +9,7 @@ public class User {
 
     public User(String name, Set<String> roles) {
         this.name = name;
-        this.roles = unmodifiableSet(new HashSet<>(roles));
+        this.roles = Set.copyOf(roles);
     }
 
     public String getName() {

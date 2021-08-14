@@ -42,12 +42,12 @@ public class AddRoleToUserBackingBean implements Validateable {
         final List<ErrorMessage> errorMessages = new ArrayList<>();
         if (name == null || name.isEmpty()) {
             errorMessages.add(new ErrorMessage("name", "Cannot be blank"));
-        } else if (name.length() < 1 || name.length() > 64) {
+        } else if (name.length() > 64) {
             errorMessages.add(new ErrorMessage("name", String.format("Length must be between %d and %d", 1, 64)));
         }
         if (role == null || role.isEmpty()) {
             errorMessages.add(new ErrorMessage("role", "Cannot be blank"));
-        } else if (role.length() < 1 || role.length() > 64) {
+        } else if (role.length() > 64) {
             errorMessages.add(new ErrorMessage("role", String.format("Length must be between %d and %d", 1, 64)));
         }
         return unmodifiableList(errorMessages);

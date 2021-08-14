@@ -152,7 +152,7 @@ public class FilteredRequest {
             } else {
                 messages = emptyList();
             }
-            return new InputAndErrorMessages<T>(input, messages);
+            return new InputAndErrorMessages<>(input, messages);
         } catch (IllegalAccessException | InvocationTargetException | IllegalArgumentException e) {
             throw new RuntimeException(e);
         }
