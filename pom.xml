@@ -34,7 +34,7 @@
         <junit.version>5.7.2</junit.version>
         <hamcrest.version>2.2</hamcrest.version>
         <commons-beanutils.version>1.9.4</commons-beanutils.version>
-        <commons-collections.version>4.4</commons-collections.version>
+        <commons-collections.version>3.2.2</commons-collections.version>
         <h2.version>1.4.200</h2.version>
         <datasource-assert.version>1.0</datasource-assert.version>
     </properties>
@@ -164,8 +164,8 @@
         </dependency>
         <!-- commons-beanutils depends on commons-collections (should be optional, but isn't) -->
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-collections4</artifactId>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
             <version>${commons-collections.version}</version>
             <scope>runtime</scope>
         </dependency>
