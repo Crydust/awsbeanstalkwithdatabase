@@ -56,7 +56,7 @@ public class UserRepositoryIT {
         repository.addRoleToUser("a", "r2");
         ds.reset();
 
-        final User user = repository.findByName("a").get();
+        final User user = repository.findByName("a").orElseThrow();
 
         assertAll(
                 () -> assertThat(user.getName(), is("a")),

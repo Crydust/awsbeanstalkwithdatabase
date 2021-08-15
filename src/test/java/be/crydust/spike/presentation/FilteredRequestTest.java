@@ -134,7 +134,7 @@ public class FilteredRequestTest {
             final List<ErrorMessage> errorMessages = new ArrayList<>();
             if (name == null || name.isEmpty()) {
                 errorMessages.add(new ErrorMessage("name", "Cannot be blank"));
-            } else if (name.length() < 1 || name.length() > 8) {
+            } else if (name.length() > 8) {
                 errorMessages.add(new ErrorMessage("name", String.format("Length must be between %d and %d", 1, 8)));
             }
             return unmodifiableList(errorMessages);
