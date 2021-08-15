@@ -4,12 +4,16 @@
             auth="Container"
             type="javax.sql.DataSource"
             name="jdbc/MyDataSource"
-            factory="com.zaxxer.hikari.HikariJNDIFactory"
+            factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"
             dataSourceClassName="org.postgresql.ds.PGSimpleDataSource"
-            dataSource.user="${RDS_USERNAME}"
-            dataSource.password="${RDS_PASSWORD}"
-            dataSource.url="jdbc:postgresql://${RDS_HOSTNAME}:${RDS_PORT}/${RDS_DB_NAME}"
-            minimumIdle="0"
+            username="${RDS_USERNAME}"
+            password="${RDS_PASSWORD}"
+            url="jdbc:postgresql://${RDS_HOSTNAME}:${RDS_PORT}/${RDS_DB_NAME}"
+            initialSize="0"
+            minIdle="0"
+            maxIdle="2"
+            maxActive="2"
+            driverClassName="org.postgresql.Driver"
     />
     <Realm className="org.apache.catalina.realm.LockOutRealm">
         <Realm

@@ -1,12 +1,11 @@
 package be.crydust.spike.boilerplate;
 
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
 import net.ttddyy.dsproxy.asserts.ParameterByIndexHolder;
 import net.ttddyy.dsproxy.asserts.ParameterKeyValue;
 import net.ttddyy.dsproxy.asserts.ProxyTestDataSource;
 import net.ttddyy.dsproxy.asserts.QueryExecution;
 import net.ttddyy.dsproxy.asserts.QueryHolder;
+import org.apache.tomcat.jdbc.pool.PoolProperties;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
@@ -20,6 +19,7 @@ import java.util.UUID;
 
 public class DataSourceResource implements BeforeEachCallback, AfterEachCallback {
 
+    private final String driverClassName;
     private final String connectionUrl;
     private final String user;
     private final String password;
@@ -31,10 +31,11 @@ public class DataSourceResource implements BeforeEachCallback, AfterEachCallback
     }
 
     public DataSourceResource(boolean allowMultipleSimultaneousConnections) {
-        this("jdbc:h2:mem:test-" + UUID.randomUUID().toString(), "sa", "", allowMultipleSimultaneousConnections);
+        this("org.h2.Driver", "jdbc:h2:mem:test-" + UUID.randomUUID().toString(), "sa", "", allowMultipleSimultaneousConnections);
     }
 
-    private DataSourceResource(String connectionUrl, String user, String password, boolean allowMultipleSimultaneousConnections) {
+    private DataSourceResource(String driverClassName, String connectionUrl, String user, String password, boolean allowMultipleSimultaneousConnections) {
+        this.driverClassName = driverClassName;
         this.connectionUrl = connectionUrl;
         this.user = user;
         this.password = password;
@@ -48,24 +49,32 @@ public class DataSourceResource implements BeforeEachCallback, AfterEachCallback
     @Override
     public void beforeEach(ExtensionContext extensionContext) {
         final DataSource realDataSource = allowMultipleSimultaneousConnections
-                ? createHikariDataSource()
+                ? createTomcatJdbcDataSource()
                 : createSimpleDataSource();
         Flyway.configure().dataSource(realDataSource).load().migrate();
         this.ds = new ProxyTestDataSource(realDataSource);
     }
 
-    private SimpleDataSource createSimpleDataSource() {
+    private DataSource createSimpleDataSource() {
+        try {
+            Class.forName(driverClassName);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
         return new SimpleDataSource(connectionUrl, user, password);
     }
 
-    private HikariDataSource createHikariDataSource() {
-        final HikariConfig config = new HikariConfig();
-        config.setMinimumIdle(0);
-        config.setMaximumPoolSize(2);
-        config.setUsername(user);
-        config.setPassword(password);
-        config.setJdbcUrl(connectionUrl);
-        return new HikariDataSource(config);
+    private DataSource createTomcatJdbcDataSource() {
+        PoolProperties p = new PoolProperties();
+        p.setInitialSize(0);
+        p.setMinIdle(0);
+        p.setMaxIdle(2);
+        p.setMaxActive(2);
+        p.setUsername(user);
+        p.setPassword(password);
+        p.setDriverClassName(driverClassName);
+        p.setUrl(connectionUrl);
+        return new org.apache.tomcat.jdbc.pool.DataSource(p);
     }
 
     @Override
