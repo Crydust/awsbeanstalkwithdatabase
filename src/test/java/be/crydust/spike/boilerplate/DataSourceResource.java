@@ -1,5 +1,7 @@
 package be.crydust.spike.boilerplate;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import net.ttddyy.dsproxy.asserts.ParameterByIndexHolder;
 import net.ttddyy.dsproxy.asserts.ParameterKeyValue;
 import net.ttddyy.dsproxy.asserts.ProxyTestDataSource;
@@ -15,30 +17,28 @@ import java.io.IOException;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.UUID;
-import java.util.function.Consumer;
 
-public class SingleConnectionDataSourceResource implements BeforeEachCallback, AfterEachCallback {
+public class DataSourceResource implements BeforeEachCallback, AfterEachCallback {
 
-    private static final Consumer<DataSource> DEFAULT_CONNECTION_CREATED_HANDLER = ds -> Flyway.configure().dataSource(ds).load().migrate();
     private final String connectionUrl;
     private final String user;
     private final String password;
-    private final Consumer<DataSource> connectionCreatedHandler;
+    private final boolean allowMultipleSimultaneousConnections;
     private ProxyTestDataSource ds;
 
-    public SingleConnectionDataSourceResource() {
-        this("jdbc:h2:mem:test-" + UUID.randomUUID().toString(), "sa", "", DEFAULT_CONNECTION_CREATED_HANDLER);
+    public DataSourceResource() {
+        this(false);
     }
 
-    public SingleConnectionDataSourceResource(String connectionUrl, String user, String password) {
-        this(connectionUrl, user, password, DEFAULT_CONNECTION_CREATED_HANDLER);
+    public DataSourceResource(boolean allowMultipleSimultaneousConnections) {
+        this("jdbc:h2:mem:test-" + UUID.randomUUID().toString(), "sa", "", allowMultipleSimultaneousConnections);
     }
 
-    public SingleConnectionDataSourceResource(String connectionUrl, String user, String password, Consumer<DataSource> connectionCreatedHandler) {
+    private DataSourceResource(String connectionUrl, String user, String password, boolean allowMultipleSimultaneousConnections) {
         this.connectionUrl = connectionUrl;
         this.user = user;
         this.password = password;
-        this.connectionCreatedHandler = connectionCreatedHandler;
+        this.allowMultipleSimultaneousConnections = allowMultipleSimultaneousConnections;
     }
 
     public ProxyTestDataSource get() {
@@ -47,9 +47,25 @@ public class SingleConnectionDataSourceResource implements BeforeEachCallback, A
 
     @Override
     public void beforeEach(ExtensionContext extensionContext) {
-        this.ds = new ProxyTestDataSource(
-                new SimpleDataSource(connectionUrl, user, password, connectionCreatedHandler)
-        );
+        final DataSource realDataSource = allowMultipleSimultaneousConnections
+                ? createHikariDataSource()
+                : createSimpleDataSource();
+        Flyway.configure().dataSource(realDataSource).load().migrate();
+        this.ds = new ProxyTestDataSource(realDataSource);
+    }
+
+    private SimpleDataSource createSimpleDataSource() {
+        return new SimpleDataSource(connectionUrl, user, password);
+    }
+
+    private HikariDataSource createHikariDataSource() {
+        final HikariConfig config = new HikariConfig();
+        config.setMinimumIdle(0);
+        config.setMaximumPoolSize(2);
+        config.setUsername(user);
+        config.setPassword(password);
+        config.setJdbcUrl(connectionUrl);
+        return new HikariDataSource(config);
     }
 
     @Override
@@ -76,7 +92,7 @@ public class SingleConnectionDataSourceResource implements BeforeEachCallback, A
             } else {
                 sql = "?";
             }
-            System.out.printf("%d. %s%n", (i + 1), sql);
+            System.out.printf("%d. %s%n", (i), sql);
 
             if (queryExecution instanceof ParameterByIndexHolder) {
                 final SortedSet<ParameterKeyValue> parameters = ((ParameterByIndexHolder) queryExecution).getAllParameters();

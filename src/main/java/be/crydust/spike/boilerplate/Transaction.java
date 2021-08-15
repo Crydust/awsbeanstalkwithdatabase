@@ -3,6 +3,7 @@ package be.crydust.spike.boilerplate;
 import be.crydust.spike.business.RepositoryException;
 
 import javax.sql.DataSource;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.function.Consumer;
@@ -18,16 +19,12 @@ public class Transaction implements Runnable {
 
     @Override
     public void run() {
-        final SingleConnectionDataSource sds = new SingleConnectionDataSource(ds);
-        try (final Connection con = sds.getConnection()) {
+        try (final SingleConnectionDataSource sds = new SingleConnectionDataSource(ds);
+             final Connection con = sds.getConnection()) {
             con.setAutoCommit(false);
-            try {
-                consumer.accept(ds);
-                con.commit();
-            } finally {
-                con.setAutoCommit(true);
-            }
-        } catch (SQLException e) {
+            consumer.accept(sds);
+            con.commit();
+        } catch (SQLException | IOException e) {
             throw new RepositoryException(e);
         }
     }

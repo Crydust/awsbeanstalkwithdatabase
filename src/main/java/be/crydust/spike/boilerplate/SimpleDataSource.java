@@ -8,7 +8,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
-import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 /**
@@ -22,18 +21,12 @@ class SimpleDataSource implements DataSource, Closeable {
     private final String connectionUrl;
     private final String username;
     private final String password;
-    private final Consumer<DataSource> connectionCreatedHandler;
     private UncloseableConnection connection;
 
     public SimpleDataSource(String connectionUrl, String username, String password) {
-        this(connectionUrl, username, password, ds -> {/*NOOP*/});
-    }
-
-    public SimpleDataSource(String connectionUrl, String username, String password, Consumer<DataSource> connectionCreatedHandler) {
         this.connectionUrl = connectionUrl;
         this.username = username;
         this.password = password;
-        this.connectionCreatedHandler = connectionCreatedHandler;
     }
 
     @Override
@@ -45,7 +38,6 @@ class SimpleDataSource implements DataSource, Closeable {
     public Connection getConnection(String username, String password) throws SQLException {
         if (connection == null || connection.isClosed()) {
             connection = new UncloseableConnection(DriverManager.getConnection(connectionUrl, username, password));
-            connectionCreatedHandler.accept(this);
         }
         return connection;
     }

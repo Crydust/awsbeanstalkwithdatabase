@@ -1,14 +1,16 @@
 package be.crydust.spike.boilerplate;
 
 import javax.sql.DataSource;
+import java.io.Closeable;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class SingleConnectionDataSource extends DelegatingDataSource {
+class SingleConnectionDataSource extends DelegatingDataSource implements Closeable {
 
-    private volatile Connection connection = null;
+    private volatile UncloseableConnection connection = null;
 
-    public SingleConnectionDataSource(DataSource ds) {
+    SingleConnectionDataSource(DataSource ds) {
         super(ds);
     }
 
@@ -17,7 +19,7 @@ public class SingleConnectionDataSource extends DelegatingDataSource {
         if (connection == null) {
             synchronized (this) {
                 if (connection == null) {
-                    connection = super.getConnection();
+                    connection = new UncloseableConnection(super.getConnection());
                 }
             }
         }
@@ -29,10 +31,22 @@ public class SingleConnectionDataSource extends DelegatingDataSource {
         if (connection == null) {
             synchronized (this) {
                 if (connection == null) {
-                    connection = super.getConnection(username, password);
+                    connection = new UncloseableConnection(super.getConnection(username, password));
                 }
             }
         }
         return connection;
     }
+
+    @Override
+    public void close() throws IOException {
+        if (connection != null) {
+            try {
+                connection.reallyClose();
+            } catch (SQLException ex) {
+                throw new IOException(ex);
+            }
+        }
+    }
+
 }

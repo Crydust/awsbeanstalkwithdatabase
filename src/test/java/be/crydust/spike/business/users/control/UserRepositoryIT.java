@@ -1,6 +1,6 @@
 package be.crydust.spike.business.users.control;
 
-import be.crydust.spike.boilerplate.SingleConnectionDataSourceResource;
+import be.crydust.spike.boilerplate.DataSourceResource;
 import be.crydust.spike.business.users.entity.User;
 import net.ttddyy.dsproxy.asserts.ProxyTestDataSource;
 import org.junit.jupiter.api.AfterEach;
@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 public class UserRepositoryIT {
 
     @RegisterExtension
-    SingleConnectionDataSourceResource dataSourceResource = new SingleConnectionDataSourceResource();
+    DataSourceResource dataSourceResource = new DataSourceResource();
 
     private ProxyTestDataSource ds;
     private UserRepository repository;
