@@ -1,4 +1,4 @@
-FROM tomcat:8.5.63-jdk11-corretto
+FROM tomcat:9.0.52-jdk11-adoptopenjdk-hotspot
 
 RUN set -ex; \
     rm -rf ${CATALINA_HOME}/webapps/*; \
